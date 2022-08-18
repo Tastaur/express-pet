@@ -1,0 +1,70 @@
+{
+  "extends": [
+    "@eslint-kit/typescript",
+    "@eslint-kit/base",
+    "@eslint-kit/node"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "ignorePatterns": [
+    "/node_modules/**",
+    "/dist/**"
+  ],
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "import/extensions": ["error", "always", {
+      "pattern": { "js": "never" }
+    }],
+    "import/no-unresolved": "off",
+    "import/no-anonymous-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
+    "indent": ["error", 2, {"SwitchCase": 1}],
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "unicorn/prefer-spread": "off",
+    "semi": ["error"],
+    "prefer-rest-params": "off",
+    "max-len": ["error", { "code": 120, "ignoreStrings": true }],
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off",
+    "no-use-before-define": "off",
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0 }],
+    "yoda": ["error", "always", {"onlyEquality": true}]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "extends": [
+        "plugin:@typescript-eslint/eslint-plugin/recommended",
+        "plugin:@typescript-eslint/eslint-plugin/eslint-recommended"
+      ],
+      "rules": {
+        "no-unused-vars": "off",
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": ["warn"],
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "import/extensions": "off",
+        "indent": ["error", 2, {"SwitchCase": 1}],
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/naming-convention": [
+          "warn",
+          {
+            "selector": "variable",
+            "format": ["camelCase", "UPPER_CASE", "PascalCase"],
+            "leadingUnderscore": "allow"
+          },
+          {
+            "selector": "parameter",
+            "format": ["camelCase"],
+            "leadingUnderscore": "allow"
+          },
+          {
+            "selector": "typeLike",
+            "format": ["PascalCase"]
+          }
+        ]
+      }
+    }
+  ]
+}
