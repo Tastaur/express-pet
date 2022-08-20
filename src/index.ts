@@ -1,16 +1,16 @@
 import express from 'express';
 
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 3003;
 app.use(express.json());
 
-interface Entity {
+export interface Entity {
   id: number,
   name: string
 }
 
-const example: Record<string, Entity> = {
+export const exampleObject: Record<string, Entity> = {
   // todo mock
   '1': {
     id: 1,
@@ -27,13 +27,13 @@ app.get('/', (request, response) => {
 });
 
 app.get('/example', (request, response) => {
-  response.status(200).json(example);
+  response.status(200).json(exampleObject);
 });
 
 app.post('/example', (request, response) => {
   const payload = request.body;
   if ('id' in payload && 'name' in payload) {
-    example[payload.id] = payload;
+    exampleObject[payload.id] = payload;
     response.status(201).json(payload);
     return;
   }
@@ -41,9 +41,9 @@ app.post('/example', (request, response) => {
 });
 
 app.delete('/example/:id', (request, response) => {
-  const {id} = request.params;
-  if (id in example) {
-    delete example[id];
+  const { id } = request.params;
+  if (id in exampleObject) {
+    delete exampleObject[id];
     response.sendStatus(200);
     return;
   }
@@ -51,9 +51,9 @@ app.delete('/example/:id', (request, response) => {
 });
 
 app.get('/example/:id', (request, response) => {
-  const {id} = request.params;
-  if (id in example) {
-    response.status(200).json(example[id]);
+  const { id } = request.params;
+  if (id in exampleObject) {
+    response.status(200).json(exampleObject[id]);
     return;
   }
   response.sendStatus(404);
@@ -62,9 +62,9 @@ app.get('/example/:id', (request, response) => {
 app.put('/example', (request, response) => {
   const payload = request.body;
   if ('id' in payload && 'name' in payload) {
-    if (example[payload.id]) {
-      (example[payload.id] as Entity).name = payload.name;
-      response.status(200).json(example[payload.id]);
+    if (exampleObject[payload.id]) {
+      (exampleObject[payload.id] as Entity).name = payload.name;
+      response.status(200).json(exampleObject[payload.id]);
       return;
     }
     response.sendStatus(400);
