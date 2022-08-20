@@ -3,31 +3,26 @@ import { app, Entity, exampleObject } from '../index';
 
 describe('test /example', () => {
   it('GET /example', async () => {
-    const res = await request(app).get('/example');
-    expect(exampleObject).toEqual(res.body);
-    expect(200).toEqual(res.statusCode);
+    await request(app)
+      .get('/example')
+      .expect(200, exampleObject);
   });
 
   it('GET /example/1', async () => {
     const findItemId = 1;
-    const res = await request(app).get(`/example/${findItemId}`);
-    expect(exampleObject[findItemId]).toEqual(res.body);
-    expect(200).toEqual(res.statusCode);
+    await request(app)
+      .get(`/example/${findItemId}`)
+      .expect(200, exampleObject[findItemId]);
   });
   it('GET /example/321', async () => {
     const findItemId = 321;
-    const res = await request(app).get(`/example/${findItemId}`);
-    expect(404).toEqual(res.statusCode);
+    await request(app).get(`/example/${findItemId}`).expect(404);
   });
   it('DELETE /example/1', async () => {
     const findItemId = 1;
-    const res = await request(app).get(`/example/${findItemId}`);
-    expect(exampleObject[findItemId]).toEqual(res.body);
-    expect(200).toEqual(res.statusCode);
-    const res1 = await request(app).delete(`/example/${findItemId}`);
-    expect(res1.status).toEqual(200);
-    const res3 = await request(app).delete(`/example/${findItemId}`);
-    expect(res3.status).toEqual(404);
+    await request(app).get(`/example/${findItemId}`).expect(200, exampleObject[findItemId]);
+    await request(app).delete(`/example/${findItemId}`).expect(200);
+    await request(app).delete(`/example/${findItemId}`).expect(404);
   });
 
   it('POST /example',  (done) => {
