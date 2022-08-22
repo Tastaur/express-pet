@@ -45,7 +45,12 @@ describe('test /example', () => {
       .post('/example')
       .send(item)
       .expect(400, done);
+
+    request(app)
+      .get('/example')
+      .expect(200,{ [item.id] : item });
   });
+
 
   it('PUT /example',  (done) => {
     const changes = {
@@ -53,9 +58,17 @@ describe('test /example', () => {
       name: 'changes',
     };
     request(app)
+      .get('/example/1')
+      .expect(200, exampleObject[changes.id]);
+
+    request(app)
       .put('/example')
       .send(changes)
       .expect(200, done);
+
+    request(app)
+      .get('/example/1')
+      .expect(200, changes);
   });
 
   it('PUT /example bad request',  (done) => {
