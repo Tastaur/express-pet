@@ -1,7 +1,24 @@
 import request from 'supertest';
-import { app, Entity, exampleObject } from '../index';
+import { ExampleController, exampleObject } from "../examples/examples.controller";
+import { Entity } from "../examples/example.interface";
+import { App } from "../app";
+import { Express } from "express";
+import { LoggerService } from "../logger/logger.service";
+import { ExceptionFilter } from "../exceptionFIlter/exception.filter";
+
+const logger = new LoggerService();
+const application = new App({
+  logger,
+  example: new ExampleController(logger),
+  exceptionFilter: new ExceptionFilter(logger),
+});
 
 describe('test /example', () => {
+  let app: Express;
+  beforeAll(() => {
+    application.init();
+    app = application.app;
+  });
   it('GET /example', async () => {
     await request(app)
       .get('/example')
@@ -25,7 +42,7 @@ describe('test /example', () => {
     await request(app).delete(`/example/${findItemId}`).expect(404);
   });
 
-  it('POST /example',  (done) => {
+  it('POST /example', (done) => {
     const item: Entity = {
       id: 1,
       name: 'Example',
@@ -36,7 +53,7 @@ describe('test /example', () => {
       .expect(201, done);
   });
 
-  it('POST /example bad request',  (done) => {
+  it('POST /example bad request', (done) => {
     const item = {
       id: 1,
       ame: 'Example',
@@ -48,11 +65,11 @@ describe('test /example', () => {
 
     request(app)
       .get('/example')
-      .expect(200,{ [item.id] : item });
+      .expect(200, { [item.id]: item });
   });
 
 
-  it('PUT /example',  (done) => {
+  it('PUT /example', (done) => {
     const changes = {
       id: 1,
       name: 'changes',
@@ -71,7 +88,7 @@ describe('test /example', () => {
       .expect(200, changes);
   });
 
-  it('PUT /example bad request',  (done) => {
+  it('PUT /example bad request', (done) => {
     const changes = {
       id: 1,
       ne: 'changes',
