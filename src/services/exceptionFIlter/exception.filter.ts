@@ -10,7 +10,7 @@ export class ExceptionFilter implements ExceptionFilterInterface {
     this.logger = logger;
   }
 
-  catch(error: Error | HTTPError, req: Request, res: Response) {
+  catch = (error: Error | HTTPError, req: Request, res: Response) => {
     if (error instanceof HTTPError) {
       const { context, message, statusCode } = error;
       this.logger.error(`${context ? `[${context}]` : ''}: ${statusCode}: ${message}`);
@@ -18,5 +18,5 @@ export class ExceptionFilter implements ExceptionFilterInterface {
       this.logger.log(error.message);
     }
     res.status(500).json({ err: error.message });
-  }
+  };
 }

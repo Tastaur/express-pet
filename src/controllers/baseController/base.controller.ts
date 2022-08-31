@@ -1,13 +1,16 @@
 import { Request, Response, Router } from "express";
-import { LoggerService } from "../logger/logger.service";
 
 import { BaseRouterInterface } from "./base.router.interface";
+import { LoggerService } from "services/logger/logger.service";
+import { ROUTE_NAME } from "globalConstants";
 
 export class BaseController {
   private readonly _router: Router;
+  protected readonly context: ROUTE_NAME;
 
-  constructor(private logger: LoggerService) {
+  constructor(private logger: LoggerService, context: ROUTE_NAME) {
     this._router = Router();
+    this.context = context;
   }
 
   get router() {
@@ -30,9 +33,9 @@ export class BaseController {
   }
 
   protected bindRouter<RQ extends Request = Request,
-    RS extends Response = Response>(routes: BaseRouterInterface<RQ, RS>[]) {
+    RS extends Response = Response>(routes: BaseRouterInterface<RQ, RS>[], context: ROUTE_NAME) {
     for (const { func, method, path } of routes) {
-      this.logger.log(`Подкюлчен: ${method.toLocaleUpperCase()} ${path}`);
+      this.logger.log(`Подкюлчен: [${context}] ${method.toLocaleUpperCase()} ${path}`);
       // @ts-ignore
       this.router[method](path, func.bind(this));
     }

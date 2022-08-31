@@ -57,12 +57,18 @@
           },
           {
             "selector": "parameter",
-            "format": ["camelCase"],
+            "format": [
+              "camelCase",
+              "UPPER_CASE"
+            ],
             "leadingUnderscore": "allow"
           },
           {
             "selector": "typeLike",
-            "format": ["PascalCase"]
+            "format": [
+              "PascalCase",
+              "UPPER_CASE"
+            ]
           }
         ]
       }

@@ -1,8 +1,9 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { LoggerService } from "./logger/logger.service";
-import { ExampleController } from "./examples/examples.controller";
-import { ExceptionFilter } from "./exceptionFIlter/exception.filter";
+import { LoggerService } from "./services/logger/logger.service";
+import { ExceptionFilter } from "./services/exceptionFIlter/exception.filter";
+import { ExampleController } from "./controllers/examples/examples.controller";
+import { ROUTE_NAME } from "./globalConstants";
 
 interface AppServices {
   logger: LoggerService;
@@ -20,26 +21,25 @@ export class App {
 
   constructor(service: AppServices) {
     this.app = express();
-    this.port = process.env.PORT || 3005;
+    this.port = process.env.PORT || 3003;
     this.app.use(express.json());
     this.logger = service.logger;
     this.example = service.example;
     this.exceptionFilter = service.exceptionFilter;
   }
 
+  useRoutes() {
+    this.app.use(`/${ROUTE_NAME.EXAMPLE}`, this.example.router);
+  }
 
-  useExceptionFilter = () => {
-    this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
-  };
-
-  useRoutes = () => {
-    this.app.use('/example', this.example.router);
-  };
+  useExceptionFilter() {
+    this.app.use(this.exceptionFilter.catch);
+  }
 
   public init = async () => {
     this.useRoutes();
     this.useExceptionFilter();
     this.server = this.app.listen(this.port);
-    this.logger.log(`Запущено`);
+    this.logger.log(`Запущено: ${this.port}`);
   };
 }

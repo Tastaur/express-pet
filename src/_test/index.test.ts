@@ -1,15 +1,16 @@
 import request from 'supertest';
-import { ExampleController, exampleObject } from "../examples/examples.controller";
-import { Entity } from "../examples/example.interface";
 import { App } from "../app";
 import { Express } from "express";
-import { LoggerService } from "../logger/logger.service";
-import { ExceptionFilter } from "../exceptionFIlter/exception.filter";
+import { LoggerService } from "../services/logger/logger.service";
+import { ExampleController, exampleObject } from "../controllers/examples/examples.controller";
+import { ExceptionFilter } from "../services/exceptionFIlter/exception.filter";
+import { Entity } from "../controllers/examples/example.interface";
+import { ROUTE_NAME } from "../globalConstants";
 
 const logger = new LoggerService();
 const application = new App({
   logger,
-  example: new ExampleController(logger),
+  example: new ExampleController(logger, ROUTE_NAME.EXAMPLE),
   exceptionFilter: new ExceptionFilter(logger),
 });
 
