@@ -1,13 +1,15 @@
 import express, { Express } from "express";
 import { Server } from "http";
 import { LoggerService } from "./services/logger/logger.service";
-import { ExceptionFilter } from "./services/exceptionFIlter/exception.filter";
 import { ExampleController } from "./controllers/examples/examples.controller";
 import { ROUTE_NAME } from "./globalConstants";
+import { ExceptionFilter } from "./services/exceptionFIlter/exception.filter.service";
+import { UsersController } from "./controllers/users/users.controller";
 
 interface AppServices {
   logger: LoggerService;
   example: ExampleController;
+  users: UsersController;
   exceptionFilter: ExceptionFilter;
 }
 
@@ -18,6 +20,7 @@ export class App {
   logger: LoggerService;
   example: ExampleController;
   exceptionFilter: ExceptionFilter;
+  users: UsersController;
 
   constructor(service: AppServices) {
     this.app = express();
@@ -25,11 +28,14 @@ export class App {
     this.app.use(express.json());
     this.logger = service.logger;
     this.example = service.example;
+    this.users = service.users;
     this.exceptionFilter = service.exceptionFilter;
   }
 
   useRoutes() {
-    this.app.use(`/${ROUTE_NAME.EXAMPLE}`, this.example.router);
+    Object.values(ROUTE_NAME).forEach(route => {
+      this.app.use(`/${route}`, this[route].router);
+    });
   }
 
   useExceptionFilter() {
