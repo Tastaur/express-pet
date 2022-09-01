@@ -1,10 +1,10 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { LoggerService } from "./services/logger/logger.service";
-import { ExampleController } from "./controllers/examples/examples.controller";
-import { ROUTE_NAME } from "./globalConstants";
-import { ExceptionFilter } from "./services/exceptionFIlter/exception.filter.service";
-import { UsersController } from "./controllers/users/users.controller";
+import { LoggerService } from "services/logger/logger.service";
+import { ExampleController } from "controllers/examples/examples.controller";
+import { ROUTE_NAME } from "globalConstants";
+import { ExceptionFilter } from "services/exceptionFIlter/exception.filter.service";
+import { UsersController } from "controllers/users/users.controller";
 
 interface AppServices {
   logger: LoggerService;

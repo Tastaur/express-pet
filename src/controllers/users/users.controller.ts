@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
 import { LoggerService } from "services/logger/logger.service";
 import { ROUTE_NAME } from "globalConstants";
-import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
+import { HTTPError } from "services/exceptionFIlter/http-error.class";
 
 
 export const usersObject: Record<string, IUserModel> = {
