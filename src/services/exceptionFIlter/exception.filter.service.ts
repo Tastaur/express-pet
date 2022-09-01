@@ -1,12 +1,12 @@
 import { ExceptionFilterInterface } from "./exception.filter.interface";
-import { LoggerService } from "../logger/logger.service";
 import { HTTPError } from "./http-error.class";
 import { Request, Response } from "express";
+import { ILogger } from "services/logger/logger.interface";
 
 export class ExceptionFilter implements ExceptionFilterInterface {
-  logger: LoggerService;
+  logger: ILogger;
 
-  constructor(logger: LoggerService) {
+  constructor(logger: ILogger) {
     this.logger = logger;
   }
 

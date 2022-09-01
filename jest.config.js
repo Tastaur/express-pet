@@ -7,4 +7,5 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   roots: ["<rootDir>/src"],
   testMatch: ['**/_test/**/*.test.ts'],
+  setupFiles: ["<rootDir>/config/jest/jestEnvVars.js"],
 };

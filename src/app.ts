@@ -1,13 +1,13 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { LoggerService } from "services/logger/logger.service";
 import { ExampleController } from "controllers/examples/examples.controller";
-import { ROUTE_NAME } from "globalConstants";
+import { ROUTE_NAME } from "./globalConstants";
 import { ExceptionFilter } from "services/exceptionFIlter/exception.filter.service";
 import { UsersController } from "controllers/users/users.controller";
+import { ILogger } from "services/logger/logger.interface";
 
 interface AppServices {
-  logger: LoggerService;
+  logger: ILogger;
   example: ExampleController;
   users: UsersController;
   exceptionFilter: ExceptionFilter;
@@ -17,7 +17,7 @@ export class App {
   app: Express;
   port: number | string;
   server: Server;
-  logger: LoggerService;
+  logger: ILogger;
   example: ExampleController;
   exceptionFilter: ExceptionFilter;
   users: UsersController;

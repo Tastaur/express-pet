@@ -1,13 +1,13 @@
 import request from 'supertest';
-import { App } from "app";
+import { App } from "../app";
 import { Express } from "express";
-import { LoggerService } from "services/logger/logger.service";
-import { ExampleController, exampleObject } from "controllers/examples/examples.controller";
-import { Entity } from "controllers/examples/example.interface";
-import { ROUTE_NAME } from "globalConstants";
-import { UsersController, usersObject } from "controllers/users/users.controller";
-import { IUserModel } from "controllers/users/users.interface";
-import { ExceptionFilter } from "services/exceptionFIlter/exception.filter.service";
+import { LoggerService } from "../services/logger/logger.service";
+import { ExampleController, exampleObject } from "../controllers/examples/examples.controller";
+import { Entity } from "../controllers/examples/example.interface";
+import { ROUTE_NAME } from "../globalConstants";
+import { UsersController, usersObject } from "../controllers/users/users.controller";
+import { IUserModel } from "../controllers/users/users.interface";
+import { ExceptionFilter } from "../services/exceptionFIlter/exception.filter.service";
 
 
 const logger = new LoggerService();

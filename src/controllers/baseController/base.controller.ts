@@ -1,14 +1,14 @@
 import { Request, Response, Router } from "express";
 
 import { BaseRouterInterface } from "./base.router.interface";
-import { LoggerService } from "services/logger/logger.service";
 import { ROUTE_NAME } from "globalConstants";
+import { ILogger } from "services/logger/logger.interface";
 
 export class BaseController {
   private readonly _router: Router;
   protected readonly context: ROUTE_NAME;
 
-  constructor(private logger: LoggerService, context: ROUTE_NAME) {
+  constructor(private logger: ILogger, context: ROUTE_NAME) {
     this._router = Router();
     this.context = context;
   }
