@@ -4,15 +4,16 @@ import { ExampleController } from "controllers/examples/examples.controller";
 import { ROUTE_NAME } from "./globalConstants";
 import { ExceptionFilter } from "services/exceptionFIlter/exception.filter.service";
 import { UsersController } from "controllers/users/users.controller";
-import { ILogger } from "services/logger/logger.interface";
+import { ILogger } from "./services/logger/logger.interface";
+import { LoggerDecorator } from "./services/logger/logger.decorator";
 
 interface AppServices {
-  logger: ILogger;
   example: ExampleController;
   users: UsersController;
   exceptionFilter: ExceptionFilter;
 }
 
+@LoggerDecorator
 export class App {
   app: Express;
   port: number | string;
@@ -24,12 +25,11 @@ export class App {
 
   constructor(service: AppServices) {
     this.app = express();
-    this.port = process.env.PORT || 3003;
+    this.exceptionFilter = service.exceptionFilter;
+    this.port = process.env.PORT || 3005;
     this.app.use(express.json());
-    this.logger = service.logger;
     this.example = service.example;
     this.users = service.users;
-    this.exceptionFilter = service.exceptionFilter;
   }
 
   useRoutes() {

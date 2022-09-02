@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { App } from "../app";
 import { Express } from "express";
-import { LoggerService } from "../services/logger/logger.service";
 import { ExampleController, exampleObject } from "../controllers/examples/examples.controller";
 import { Entity } from "../controllers/examples/example.interface";
 import { ROUTE_NAME } from "../globalConstants";
@@ -10,12 +9,10 @@ import { IUserModel } from "../controllers/users/users.interface";
 import { ExceptionFilter } from "../services/exceptionFIlter/exception.filter.service";
 
 
-const logger = new LoggerService();
 const application = new App({
-  logger,
-  example: new ExampleController(logger, ROUTE_NAME.EXAMPLE),
-  users: new UsersController(logger, ROUTE_NAME.USERS),
-  exceptionFilter: new ExceptionFilter(logger),
+  example: new ExampleController(ROUTE_NAME.EXAMPLE),
+  users: new UsersController(ROUTE_NAME.USERS),
+  exceptionFilter: new ExceptionFilter(),
 });
 
 describe('test app', () => {

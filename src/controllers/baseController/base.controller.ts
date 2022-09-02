@@ -1,14 +1,18 @@
 import { Request, Response, Router } from "express";
 
 import { BaseRouterInterface } from "./base.router.interface";
-import { ROUTE_NAME } from "globalConstants";
-import { ILogger } from "services/logger/logger.interface";
+import { ROUTE_NAME } from "../../globalConstants";
+import { ILogger } from "../../services/logger/logger.interface";
+import { LoggerDecorator } from "../../services/logger/logger.decorator";
 
+
+@LoggerDecorator
 export class BaseController {
   private readonly _router: Router;
   protected readonly context: ROUTE_NAME;
+  readonly logger: ILogger;
 
-  constructor(private logger: ILogger, context: ROUTE_NAME) {
+  constructor(context: ROUTE_NAME) {
     this._router = Router();
     this.context = context;
   }

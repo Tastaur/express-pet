@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
-import { ILogger } from "../../services/logger/logger.interface";
 
 
 export const exampleObject: Record<string, Entity> = {
@@ -15,8 +14,8 @@ export const exampleObject: Record<string, Entity> = {
 };
 
 export class ExampleController extends BaseController {
-  constructor(logger: ILogger, context: ROUTE_NAME) {
-    super(logger, context);
+  constructor(context: ROUTE_NAME) {
+    super(context);
     this.bindRouter([{
       method: 'get',
       path: '/',
