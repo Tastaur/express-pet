@@ -7,8 +7,6 @@ import { LoggerDecorator } from "../logger/logger.decorator";
 @LoggerDecorator
 export class ExceptionFilter implements ExceptionFilterInterface {
   logger: ILogger;
-  constructor() {
-  }
 
   catch = (error: Error | HTTPError, req: Request, res: Response, next: NextFunction) => {
     if (error instanceof HTTPError) {
