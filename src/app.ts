@@ -1,35 +1,30 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { ExampleController } from "controllers/examples/examples.controller";
+import { ExampleController } from "./controllers/examples/examples.controller";
 import { ROUTE_NAME } from "./globalConstants";
-import { ExceptionFilter } from "services/exceptionFIlter/exception.filter.service";
-import { UsersController } from "controllers/users/users.controller";
+import { UsersController } from "./controllers/users/users.controller";
 import { ILogger } from "./services/logger/logger.interface";
-import { LoggerDecorator } from "./services/logger/logger.decorator";
+import { inject, injectable } from "inversify";
+import { SERVICE_TYPES } from "./globalTypes";
+import { IExceptionFilter } from "./services/exceptionFIlter/exception.filter.interface";
+import 'reflect-metadata';
 
-interface AppServices {
-  example: ExampleController;
-  users: UsersController;
-  exceptionFilter: ExceptionFilter;
-}
 
-@LoggerDecorator
+@injectable()
 export class App {
   app: Express;
   port: number | string;
   server: Server;
-  logger: ILogger;
-  example: ExampleController;
-  exceptionFilter: ExceptionFilter;
-  users: UsersController;
 
-  constructor(service: AppServices) {
+  constructor(
+    @inject(SERVICE_TYPES.ILogger) private logger: ILogger,
+    @inject(SERVICE_TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
+    @inject(SERVICE_TYPES.Users) private users: UsersController,
+    @inject(SERVICE_TYPES.Example) private example: ExampleController,
+  ) {
     this.app = express();
-    this.exceptionFilter = service.exceptionFilter;
     this.port = process.env.PORT || 3005;
     this.app.use(express.json());
-    this.example = service.example;
-    this.users = service.users;
   }
 
   useRoutes() {

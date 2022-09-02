@@ -1,27 +1,15 @@
 import request from 'supertest';
-import { App } from "../app";
-import { Express } from "express";
-import { ExampleController, exampleObject } from "../controllers/examples/examples.controller";
+import { exampleObject } from "../controllers/examples/examples.controller";
 import { Entity } from "../controllers/examples/example.interface";
-import { ROUTE_NAME } from "../globalConstants";
-import { UsersController, usersObject } from "../controllers/users/users.controller";
+import { usersObject } from "../controllers/users/users.controller";
 import { IUserModel } from "../controllers/users/users.interface";
-import { ExceptionFilter } from "../services/exceptionFIlter/exception.filter.service";
+import { app as mainApp } from "../index";
+import 'reflect-metadata';
 
 
-const application = new App({
-  example: new ExampleController(ROUTE_NAME.EXAMPLE),
-  users: new UsersController(ROUTE_NAME.USERS),
-  exceptionFilter: new ExceptionFilter(),
-});
+const app = mainApp.app;
 
 describe('test app', () => {
-  let app: Express;
-  beforeAll(() => {
-    application.init();
-    app = application.app;
-  });
-
   describe('/example', () => {
     it('GET /example', async () => {
       await request(app)

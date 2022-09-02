@@ -1,6 +1,9 @@
 import { Logger } from 'tslog';
-import { ILogger } from "services/logger/logger.interface";
+import { ILogger } from "./logger.interface";
+import { injectable } from "inversify";
+import 'reflect-metadata';
 
+@injectable()
 export class LoggerService implements ILogger{
   public logger: Logger;
 
@@ -10,6 +13,7 @@ export class LoggerService implements ILogger{
       displayLoggerName: false,
       displayFilePath: 'hidden',
       displayFunctionName: false,
+      dateTimeTimezone: 'Europe/Samara',
     });
   }
 

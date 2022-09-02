@@ -1,9 +1,12 @@
 import { IUserModel } from "./users.interface";
 import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
-import { ROUTE_NAME } from "globalConstants";
+import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
-import { WithId } from "globalTypes";
+import { WithId } from "../../globalTypes";
+import { injectable } from "inversify";
+import { ILogger } from "../../services/logger/logger.interface";
+import 'reflect-metadata';
 
 
 export const usersObject: Record<string, IUserModel> = {
@@ -15,9 +18,11 @@ export const usersObject: Record<string, IUserModel> = {
   },
 };
 
+@injectable()
 export class UsersController extends BaseController {
-  constructor(context: ROUTE_NAME) {
-    super(context);
+  context = ROUTE_NAME.USERS;
+  constructor(logger: ILogger) {
+    super(logger);
     this.bindRouter([{
       method: 'get',
       path: '/',
@@ -78,7 +83,7 @@ export class UsersController extends BaseController {
       this.ok(response, { id });
       return;
     }
-    next(new HTTPError(404, `Пользователь по ${id} не найден`, this.context));
+    next(new HTTPError(404, `Пользователь по id ${id} не найден`, this.context));
   }
 
   updateUser(request: Request<unknown, IUserModel, IUserModel>, response: Response, next: NextFunction) {

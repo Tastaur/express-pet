@@ -3,7 +3,10 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
-import { WithId } from "globalTypes";
+import { WithId } from "../../globalTypes";
+import { ILogger } from "../../services/logger/logger.interface";
+import { injectable } from "inversify";
+import 'reflect-metadata';
 
 
 export const exampleObject: Record<string, Entity> = {
@@ -14,9 +17,11 @@ export const exampleObject: Record<string, Entity> = {
   },
 };
 
+@injectable()
 export class ExampleController extends BaseController {
-  constructor(context: ROUTE_NAME) {
-    super(context);
+  context = ROUTE_NAME.EXAMPLE;
+  constructor(logger: ILogger) {
+    super(logger);
     this.bindRouter([{
       method: 'get',
       path: '/',
@@ -55,7 +60,7 @@ export class ExampleController extends BaseController {
       this.send(response, 200, exampleObject[id]);
       return;
     }
-    next(new HTTPError(404, 'Примера по данному id не найдено', this.context));
+    next(new HTTPError(404, `Примера по id ${id} не найдено`, this.context));
   }
 
   createExample(request: Request<unknown, unknown, Entity>, response: Response, next: NextFunction) {

@@ -3,18 +3,16 @@ import { Request, Response, Router } from "express";
 import { BaseRouterInterface } from "./base.router.interface";
 import { ROUTE_NAME } from "../../globalConstants";
 import { ILogger } from "../../services/logger/logger.interface";
-import { LoggerDecorator } from "../../services/logger/logger.decorator";
+import { inject, injectable } from "inversify";
+import { SERVICE_TYPES } from "../../globalTypes";
+import 'reflect-metadata';
 
-
-@LoggerDecorator
+@injectable()
 export class BaseController {
   private readonly _router: Router;
-  protected readonly context: ROUTE_NAME;
-  readonly logger: ILogger;
 
-  constructor(context: ROUTE_NAME) {
+  constructor(@inject(SERVICE_TYPES.ILogger) private logger: ILogger) {
     this._router = Router();
-    this.context = context;
   }
 
   get router() {
