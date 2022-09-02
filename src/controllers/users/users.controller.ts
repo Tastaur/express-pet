@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
 import { ROUTE_NAME } from "globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
+import { WithId } from "globalTypes";
 
 
 export const usersObject: Record<string, IUserModel> = {
@@ -49,7 +50,7 @@ export class UsersController extends BaseController {
     this.send(response, 200, usersObject);
   }
 
-  getUserById(request: Request<{ id: string }>, response: Response, next: NextFunction) {
+  getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
     if (id in usersObject) {
       this.send(response, 200, usersObject[id]);
@@ -58,7 +59,7 @@ export class UsersController extends BaseController {
     next(new HTTPError(404, 'Пользователь по данному id не найдено', this.context));
   }
 
-  createUser(request: Request<any, any, IUserModel>, response: Response, next: NextFunction) {
+  createUser(request: Request<unknown, unknown, IUserModel>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body && 'age' in body) {
       const id = -new Date();
@@ -70,7 +71,7 @@ export class UsersController extends BaseController {
     next(new HTTPError(400, 'Для создания пользователя надо ввести age и name', this.context));
   }
 
-  deleteUser(request: Request<{ id: string }>, response: Response, next: NextFunction) {
+  deleteUser(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
     if (id in usersObject) {
       delete usersObject[id];
@@ -80,7 +81,7 @@ export class UsersController extends BaseController {
     next(new HTTPError(404, `Пользователь по ${id} не найден`, this.context));
   }
 
-  updateUser(request: Request<any, IUserModel, IUserModel>, response: Response, next: NextFunction) {
+  updateUser(request: Request<unknown, IUserModel, IUserModel>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('id' in body && 'name' in body && 'age' in body) {
       if (usersObject[body.id]) {

@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
+import { WithId } from "globalTypes";
 
 
 export const exampleObject: Record<string, Entity> = {
@@ -48,7 +49,7 @@ export class ExampleController extends BaseController {
     this.send(response, 200, exampleObject);
   }
 
-  getExampleById(request: Request<{ id: string }>, response: Response, next: NextFunction) {
+  getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
     if (id in exampleObject) {
       this.send(response, 200, exampleObject[id]);
@@ -57,7 +58,7 @@ export class ExampleController extends BaseController {
     next(new HTTPError(404, 'Примера по данному id не найдено', this.context));
   }
 
-  createExample(request: Request<any, any, Entity>, response: Response, next: NextFunction) {
+  createExample(request: Request<unknown, unknown, Entity>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body) {
       const id = -new Date();
@@ -69,7 +70,7 @@ export class ExampleController extends BaseController {
     next(new HTTPError(400, 'Для создания примера необходимо ввести название', this.context));
   }
 
-  deleteExample(request: Request<{ id: string }>, response: Response, next: NextFunction) {
+  deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
     if (id in exampleObject) {
       delete exampleObject[id];
@@ -79,7 +80,7 @@ export class ExampleController extends BaseController {
     next(new HTTPError(400, 'Не получилось удалить, так как пользователь не существует', this.context));
   }
 
-  updateExample(request: Request<any, Entity, Entity>, response: Response, next: NextFunction) {
+  updateExample(request: Request<unknown, Entity, Entity>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('id' in body && 'name' in body) {
       if (exampleObject[body.id]) {
