@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Response, Router } from "express";
 
 import { BaseRouterInterface } from "./base.router.interface";
 import { ROUTE_NAME } from "../../globalConstants";
@@ -34,11 +34,9 @@ export class BaseController {
     return res.sendStatus(201);
   }
 
-  protected bindRouter<RQ extends Request = Request,
-    RS extends Response = Response>(routes: BaseRouterInterface<RQ, RS>[], context: ROUTE_NAME) {
+  protected bindRouter(routes: BaseRouterInterface[], context: ROUTE_NAME) {
     for (const { func, method, path } of routes) {
       this.logger.log(`Подкюлчен: [${context}] ${method.toLocaleUpperCase()} ${path}`);
-      // @ts-ignore
       this.router[method](path, func.bind(this));
     }
   }

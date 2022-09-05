@@ -187,6 +187,18 @@ describe('test app', () => {
         .expect(200, petMockObjects);
     });
 
+    it('GET /pets with query', async () => {
+      const getExpectedValue = (withTails: boolean) =>{
+        return Object.values(petMockObjects).filter(item => withTails ? item.hasTail : !item.hasTail);
+      };
+      await request(app)
+        .get('/pets?hasTail=true')
+        .expect(200, getExpectedValue(true));
+      await request(app)
+        .get('/pets?hasTail=false')
+        .expect(200, getExpectedValue(false));
+    });
+
     it('GET /pets/1', async () => {
       const findItemId = 1;
       await request(app)

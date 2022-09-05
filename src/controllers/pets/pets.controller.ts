@@ -16,11 +16,16 @@ export const petMockObjects: Record<string, IPetModel> = {
     name: 'Dog',
     hasTail: true,
   },
+  '2': {
+    id: 2,
+    name: 'Fish',
+    hasTail: false,
+  },
 };
 
 @injectable()
 export class PetsController extends BaseController {
-  context = ROUTE_NAME.USERS;
+  context = ROUTE_NAME.PETS;
   constructor(logger: ILogger) {
     super(logger);
     this.bindRouter([{
@@ -51,7 +56,16 @@ export class PetsController extends BaseController {
     ], this.context);
   }
 
-  getPets(request: Request, response: Response) {
+  getPets(request: Request<unknown, unknown, unknown, {hasTail: string}>, response: Response) {
+    const { hasTail } = request.query;
+    if('true' === hasTail){
+      this.send(response, 200, Object.values(petMockObjects).filter(item => item.hasTail));
+      return;
+    }   
+    if('false' === hasTail){
+      this.send(response, 200, Object.values(petMockObjects).filter(item => !item.hasTail));
+      return;
+    }
     this.send(response, 200, petMockObjects);
   }
 
