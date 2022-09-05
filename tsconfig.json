@@ -10,7 +10,7 @@
     "module": "CommonJS",
     "target": "ES6",
     "outDir": "./dist",
-    "baseUrl": "/",
+    "baseUrl": "/src",
     "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

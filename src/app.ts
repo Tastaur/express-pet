@@ -8,6 +8,7 @@ import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "./globalTypes";
 import { IExceptionFilter } from "./services/exceptionFIlter/exception.filter.interface";
 import 'reflect-metadata';
+import { PetsController } from "./controllers/pets/pets.controller";
 
 
 @injectable()
@@ -21,6 +22,7 @@ export class App {
     @inject(SERVICE_TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
     @inject(SERVICE_TYPES.Users) private users: UsersController,
     @inject(SERVICE_TYPES.Example) private example: ExampleController,
+    @inject(SERVICE_TYPES.Pets) private pets: PetsController,
   ) {
     this.app = express();
     this.port = process.env.PORT || 3005;

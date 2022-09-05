@@ -6,6 +6,7 @@ export enum SERVICE_TYPES  {
   IExceptionFilter = 'ExceptionFilter',
   Example = 'Example',
   Users = 'Users',
+  Pets = 'Pets'
 }
 
 
