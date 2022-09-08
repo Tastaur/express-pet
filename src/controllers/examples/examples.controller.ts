@@ -1,12 +1,13 @@
 import { Entity } from "./example.interface";
 import { NextFunction, Request, Response } from 'express';
-import { BaseController } from "../baseController/base.controller";
+import { BaseController } from "../../services/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
 import { WithId } from "../../globalTypes";
 import { ILogger } from "../../services/logger/logger.interface";
 import { injectable } from "inversify";
 import 'reflect-metadata';
+import { IExampleController } from "controllers/examples/example.controller.interface";
 
 
 export const exampleObject: Record<string, Entity> = {
@@ -18,8 +19,9 @@ export const exampleObject: Record<string, Entity> = {
 };
 
 @injectable()
-export class ExampleController extends BaseController {
+export class ExampleController extends BaseController implements IExampleController {
   context = ROUTE_NAME.EXAMPLE;
+
   constructor(logger: ILogger) {
     super(logger);
     this.bindRouter([{

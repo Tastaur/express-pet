@@ -1,12 +1,13 @@
 import { IPetModel } from "./pet.interface";
 import { NextFunction, Request, Response } from 'express';
-import { BaseController } from "../baseController/base.controller";
+import { BaseController } from "../../services/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
 import { WithId } from "../../globalTypes";
 import { injectable } from "inversify";
 import { ILogger } from "../../services/logger/logger.interface";
 import 'reflect-metadata';
+import { IPetsController } from "controllers/pets/pets.controller.interface";
 
 
 export const petMockObjects: Record<string, IPetModel> = {
@@ -24,7 +25,7 @@ export const petMockObjects: Record<string, IPetModel> = {
 };
 
 @injectable()
-export class PetsController extends BaseController {
+export class PetsController extends BaseController implements IPetsController{
   context = ROUTE_NAME.PETS;
   constructor(logger: ILogger) {
     super(logger);

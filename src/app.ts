@@ -1,14 +1,14 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { ExampleController } from "./controllers/examples/examples.controller";
 import { ROUTE_NAME } from "./globalConstants";
-import { UsersController } from "./controllers/users/users.controller";
 import { ILogger } from "./services/logger/logger.interface";
 import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "./globalTypes";
 import { IExceptionFilter } from "./services/exceptionFIlter/exception.filter.interface";
 import 'reflect-metadata';
-import { PetsController } from "./controllers/pets/pets.controller";
+import { IUserController } from "controllers/users/user.controller.interface";
+import { IPetsController } from "controllers/pets/pets.controller.interface";
+import { IExampleController } from "controllers/examples/example.controller.interface";
 
 
 @injectable()
@@ -20,9 +20,9 @@ export class App {
   constructor(
     @inject(SERVICE_TYPES.ILogger) private logger: ILogger,
     @inject(SERVICE_TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
-    @inject(SERVICE_TYPES.Users) private users: UsersController,
-    @inject(SERVICE_TYPES.Example) private example: ExampleController,
-    @inject(SERVICE_TYPES.Pets) private pets: PetsController,
+    @inject(SERVICE_TYPES.Users) private users: IUserController,
+    @inject(SERVICE_TYPES.Example) private example: IExampleController,
+    @inject(SERVICE_TYPES.Pets) private pets: IPetsController,
   ) {
     this.app = express();
     this.port = process.env.PORT || 3005;

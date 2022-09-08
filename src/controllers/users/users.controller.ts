@@ -1,12 +1,13 @@
 import { IUserModel } from "./users.interface";
 import { NextFunction, Request, Response } from 'express';
-import { BaseController } from "../baseController/base.controller";
+import { BaseController } from "../../services/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
 import { WithId } from "../../globalTypes";
 import { injectable } from "inversify";
 import { ILogger } from "../../services/logger/logger.interface";
 import 'reflect-metadata';
+import { IUserController } from "controllers/users/user.controller.interface";
 
 
 export const usersObject: Record<string, IUserModel> = {
@@ -19,7 +20,7 @@ export const usersObject: Record<string, IUserModel> = {
 };
 
 @injectable()
-export class UsersController extends BaseController {
+export class UsersController extends BaseController implements IUserController{
   context = ROUTE_NAME.USERS;
   constructor(logger: ILogger) {
     super(logger);
