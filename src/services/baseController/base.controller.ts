@@ -2,7 +2,7 @@ import { Response, Router } from "express";
 
 import { BaseRouterInterface } from "./base.router.interface";
 import { ROUTE_NAME } from "../../globalConstants";
-import { ILogger } from "../../services/logger/logger.interface";
+import { ILogger } from "../logger/logger.interface";
 import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "../../globalTypes";
 import 'reflect-metadata';
@@ -30,8 +30,8 @@ export class BaseController {
     return this.send<T>(res, 200, message);
   }
 
-  public created(res: Response) {
-    return res.sendStatus(201);
+  public created<T>(res: Response, message: T) {
+    return this.send(res, 201, message);
   }
 
   protected bindRouter(routes: BaseRouterInterface[], context: ROUTE_NAME) {

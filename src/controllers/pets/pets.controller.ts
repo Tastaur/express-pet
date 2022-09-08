@@ -85,7 +85,7 @@ export class PetsController extends BaseController implements IPetsController{
       const id = -new Date();
       const result = { ...body, id };
       petMockObjects[id] = result;
-      this.send(response, 201, result);
+      this.created(response, result);
       return;
     }
     next(new HTTPError(400, 'Для создания питомца необходимо ввести hasTail и name', this.context));

@@ -71,7 +71,7 @@ export class ExampleController extends BaseController implements IExampleControl
       const id = -new Date();
       const result = { ...body, id };
       exampleObject[id] = result;
-      this.send(response, 201, result);
+      this.created(response, result);
       return;
     }
     next(new HTTPError(400, 'Для создания примера необходимо ввести название', this.context));

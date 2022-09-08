@@ -71,7 +71,7 @@ export class UsersController extends BaseController implements IUserController{
       const id = -new Date();
       const result = { ...body, id };
       usersObject[id] = result;
-      this.send(response, 201, result);
+      this.created(response, result);
       return;
     }
     next(new HTTPError(400, 'Для создания пользователя надо ввести age и name', this.context));
