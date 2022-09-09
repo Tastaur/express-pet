@@ -8,9 +8,9 @@ import { SERVICE_TYPES } from "./globalTypes";
 import { LoggerService } from "./services/logger/logger.service";
 import { IExceptionFilter } from "./services/exceptionFIlter/exception.filter.interface";
 import { PetsController } from "./controllers/pets/pets.controller";
-import { IUserController } from "controllers/users/user.controller.interface";
-import { IPetsController } from "controllers/pets/pets.controller.interface";
-import { IExampleController } from "controllers/examples/example.controller.interface";
+import { IUserController } from "./controllers/users/user.controller.interface";
+import { IPetsController } from "./controllers/pets/pets.controller.interface";
+import { IExampleController } from "./controllers/examples/example.controller.interface";
 
 
 const appBindings = new ContainerModule((bind)=>{

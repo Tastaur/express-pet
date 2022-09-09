@@ -1,19 +1,19 @@
-import { IUserModel } from "./users.interface";
 import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../../services/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
 import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
-import { WithId } from "../../globalTypes";
+import { WithId } from "globalTypes";
 import { injectable } from "inversify";
 import { ILogger } from "../../services/logger/logger.interface";
 import 'reflect-metadata';
-import { IUserController } from "controllers/users/user.controller.interface";
+import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
+import { CreateUserDto, UpdateUserDto, UserDto } from "./dto";
+import { IUserController } from "./user.controller.interface";
 
-
-export const usersObject: Record<string, IUserModel> = {
-  // todo mock
+// todo mock
+export const usersObject: Record<string, UserDto> = {
   '1': {
-    id: 1,
+    id: '1',
     name: 'First User',
     age: 28,
   },
@@ -46,14 +46,14 @@ export class UsersController extends BaseController implements IUserController{
     },
     {
       method: 'put',
-      path: '/',
+      path: '/:id',
       func: this.updateUser,
     },
     ], this.context);
   }
 
   getUsers(request: Request, response: Response) {
-    this.send(response, 200, usersObject);
+    this.send(response, 200, getArrayFromRecord(usersObject));
   }
 
   getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
@@ -65,10 +65,10 @@ export class UsersController extends BaseController implements IUserController{
     next(new HTTPError(404, 'Пользователь по данному id не найдено', this.context));
   }
 
-  createUser(request: Request<unknown, unknown, IUserModel>, response: Response, next: NextFunction) {
+  createUser(request: Request<unknown, unknown, CreateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body && 'age' in body) {
-      const id = -new Date();
+      const id = String(-new Date());
       const result = { ...body, id };
       usersObject[id] = result;
       this.created(response, result);
@@ -87,18 +87,20 @@ export class UsersController extends BaseController implements IUserController{
     next(new HTTPError(404, `Пользователь по id ${id} не найден`, this.context));
   }
 
-  updateUser(request: Request<unknown, IUserModel, IUserModel>, response: Response, next: NextFunction) {
+  updateUser(request: Request<WithId, unknown, UpdateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
-    if ('id' in body && 'name' in body && 'age' in body) {
-      if (usersObject[body.id]) {
-        usersObject[body.id] = { ...body };
-        this.ok(response, usersObject[body.id]);
+    const { id } = request.params;
+    if (usersObject[id]) {
+      if('name' in body && 'age' in body){
+        usersObject[id] = { ...body, id };
+        this.ok(response, usersObject[id]);
         return;
       }
-      next(new HTTPError(404, 'Не удалось изменить - пользователь не найден', this.context));
+      next(new HTTPError(400, 'Не заполнены поля name и age', this.context));
       return;
     }
-    next(new HTTPError(400, 'Для редактирования необходимо  id, name, age', this.context));
+    next(new HTTPError(404, 'Не удалось изменить - пользователь не найден', this.context));
+      
   }
 }
 

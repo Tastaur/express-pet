@@ -6,6 +6,7 @@ import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "../../globalTypes";
 import 'reflect-metadata';
 
+
 @injectable()
 export class ExceptionFilter implements IExceptionFilter {
   constructor(@inject(SERVICE_TYPES.ILogger) private logger: ILogger) {

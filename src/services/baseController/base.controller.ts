@@ -6,9 +6,11 @@ import { ILogger } from "../logger/logger.interface";
 import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "../../globalTypes";
 import 'reflect-metadata';
+import { IBaseController } from "./base.controller.interface";
+
 
 @injectable()
-export class BaseController {
+export class BaseController implements IBaseController{
   private readonly _router: Router;
 
   constructor(@inject(SERVICE_TYPES.ILogger) private logger: ILogger) {

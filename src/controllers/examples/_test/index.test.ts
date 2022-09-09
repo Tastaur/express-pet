@@ -1,21 +1,22 @@
 import request from 'supertest';
 import { exampleObject } from "../examples.controller";
-import { Entity } from "../example.interface";
+import { CreateExampleDto } from "../dto";
 import { app as mainApp } from "../../../index";
 import 'reflect-metadata';
+import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
 
 
 const app = mainApp.app;
 const server = mainApp.server;
 
 describe('/example', () => {
-  beforeAll( async ()=>{
+  beforeAll(async () => {
     await server.close();
   });
   it('GET /example', async () => {
     await request(app)
       .get('/example')
-      .expect(200, exampleObject);
+      .expect(200, getArrayFromRecord(exampleObject));
   });
 
   it('GET /example/1', async () => {
@@ -30,16 +31,16 @@ describe('/example', () => {
   });
 
   it('PUT /example', (done) => {
+    const id = '1';
     const changes = {
-      id: 1,
       name: 'changes',
     };
     request(app)
-      .get(`/example/${changes.id}`)
-      .expect(200, exampleObject[changes.id]);
+      .get(`/example/${id}`)
+      .expect(200, exampleObject[id]);
 
     request(app)
-      .put('/example')
+      .put('/example/1')
       .send(changes)
       .expect(200, done);
 
@@ -50,11 +51,10 @@ describe('/example', () => {
 
   it('PUT /example bad request', (done) => {
     const changes = {
-      id: 1,
       ne: 'changes',
     };
     request(app)
-      .put('/example')
+      .put('/example/1')
       .send(changes)
       .expect(400, done);
   });
@@ -68,8 +68,7 @@ describe('/example', () => {
   });
 
   it('POST /example', (done) => {
-    const item: Entity = {
-      id: 1,
+    const item: CreateExampleDto = {
       name: 'Example',
     };
     request(app)
@@ -80,17 +79,12 @@ describe('/example', () => {
 
   it('POST /example bad request', (done) => {
     const item = {
-      id: 1,
       ame: 'Example',
     };
     request(app)
       .post('/example')
       .send(item)
       .expect(400, done);
-
-    request(app)
-      .get('/example')
-      .expect(200, { [item.id]: item });
   });
 
 });

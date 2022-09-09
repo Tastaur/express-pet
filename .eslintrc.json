@@ -39,8 +39,22 @@
         "plugin:@typescript-eslint/eslint-plugin/eslint-recommended"
       ],
       "rules": {
+        "sort-imports": ["error", {
+          "ignoreCase": false,
+          "ignoreDeclarationSort": true,
+          "ignoreMemberSort": false,
+          "memberSyntaxSortOrder": ["none", "all", "single", "multiple"]
+        }],
+        "import/newline-after-import": [
+          2,
+          {
+            "count": 2
+          }
+        ],
+        "no-multi-spaces": "error",
+        "key-spacing": "error",
         "no-unused-vars": "off",
-        "no-empty-function": "off",
+        "import/no-useless-path-segments": "off",
         "@typescript-eslint/no-empty-function": ["warn"],
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",

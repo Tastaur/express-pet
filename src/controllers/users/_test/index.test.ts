@@ -1,8 +1,10 @@
 import request from 'supertest';
 import { usersObject } from "../users.controller";
-import { IUserModel } from "../users.interface";
+import { CreateUserDto, UpdateUserDto } from "../dto";
+
 import { app as mainApp } from "../../../index";
 import 'reflect-metadata';
+import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
 
 
 const app = mainApp.app;
@@ -15,7 +17,7 @@ describe('/users', () => {
   it('GET /users', async () => {
     await request(app)
       .get('/users')
-      .expect(200, usersObject);
+      .expect(200, getArrayFromRecord(usersObject));
   });
 
   it('GET /users/1', async () => {
@@ -30,22 +32,22 @@ describe('/users', () => {
   });
 
   it('PUT /users', (done) => {
-    const changes: IUserModel = {
-      id: 1,
+    const id = '1';
+    const changes: UpdateUserDto = {
       name: 'changes',
       age: 44,
     };
     request(app)
-      .get(`/users/${changes.id}`)
-      .expect(200, usersObject[changes.id]);
+      .get(`/users/${id}`)
+      .expect(200, usersObject[id]);
 
     request(app)
-      .put('/users')
+      .put(`/users/${id}`)
       .send(changes)
       .expect(200, done);
 
     request(app)
-      .get(`/users/${changes.id}`)
+      .get(`/users/${id}`)
       .expect(200, changes);
   });
 
@@ -55,7 +57,7 @@ describe('/users', () => {
       ne: 'changes',
     };
     request(app)
-      .put('/users')
+      .put('/users/1')
       .send(changes)
       .expect(400, done);
   });
@@ -68,8 +70,7 @@ describe('/users', () => {
   });
 
   it('POST /users', (done) => {
-    const item: IUserModel = {
-      id: 1,
+    const item: CreateUserDto = {
       name: 'Example',
       age: 24,
     };

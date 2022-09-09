@@ -1,10 +1,10 @@
 import express, { Express } from "express";
 import { Server } from "http";
 import { ROUTE_NAME } from "./globalConstants";
-import { ILogger } from "./services/logger/logger.interface";
+import { ILogger } from "services/logger/logger.interface";
 import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "./globalTypes";
-import { IExceptionFilter } from "./services/exceptionFIlter/exception.filter.interface";
+import { IExceptionFilter } from "services/exceptionFIlter/exception.filter.interface";
 import 'reflect-metadata';
 import { IUserController } from "controllers/users/user.controller.interface";
 import { IPetsController } from "controllers/pets/pets.controller.interface";

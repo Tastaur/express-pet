@@ -2,7 +2,8 @@ import request from 'supertest';
 import { app as mainApp } from "../../../index";
 import 'reflect-metadata';
 import { petMockObjects } from "../pets.controller";
-import { IPetModel } from "../pet.interface";
+import { CreatePetDto, UpdatePetDto } from "../dto";
+import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
 
 
 const app = mainApp.app;
@@ -16,12 +17,12 @@ describe('/pets', () => {
   it('GET /pets', async () => {
     await request(app)
       .get('/pets')
-      .expect(200, petMockObjects);
+      .expect(200, getArrayFromRecord(petMockObjects));
   });
 
   it('GET /pets with query', async () => {
     const getExpectedValue = (withTails: boolean) => {
-      return Object.values(petMockObjects).filter(item => withTails ? item.hasTail : !item.hasTail);
+      return getArrayFromRecord(petMockObjects).filter(item => withTails ? item.hasTail : !item.hasTail);
     };
     await request(app)
       .get('/pets?hasTail=true')
@@ -43,22 +44,22 @@ describe('/pets', () => {
   });
 
   it('PUT /pets', (done) => {
-    const changes: IPetModel = {
-      id: 1,
+    const id = 1;
+    const changes: UpdatePetDto = {
       name: 'changes',
       hasTail: false,
     };
     request(app)
-      .get(`/pets/${changes.id}`)
-      .expect(200, petMockObjects[changes.id]);
+      .get(`/pets/${id}`)
+      .expect(200, petMockObjects[id]);
 
     request(app)
-      .put(`/pets/${changes.id}`)
+      .put(`/pets/${id}`)
       .send(changes)
       .expect(200, done);
 
     request(app)
-      .get(`/pets/${changes.id}`)
+      .get(`/pets/${id}`)
       .expect(200, changes);
   });
 
@@ -81,7 +82,7 @@ describe('/pets', () => {
   });
 
   it('POST /pets', (done) => {
-    const item: Omit<IPetModel, 'id'> = {
+    const item: CreatePetDto = {
       name: 'Cat',
       hasTail: true,
     };

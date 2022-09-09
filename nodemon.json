@@ -1,5 +1,5 @@
 {
-  "watch": ["src"],
+  "watch": ["./src"],
   "ext": "*",
   "ignore": ["src/**/*.test.ts"],
   "delay": 3,

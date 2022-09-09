@@ -1,4 +1,3 @@
-import { IPetModel } from "./pet.interface";
 import { NextFunction, Request, Response } from 'express';
 import { BaseController } from "../../services/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
@@ -8,9 +7,11 @@ import { injectable } from "inversify";
 import { ILogger } from "../../services/logger/logger.interface";
 import 'reflect-metadata';
 import { IPetsController } from "controllers/pets/pets.controller.interface";
+import { CreatePetDto, PetDto, UpdatePetDto } from "controllers/pets/dto";
+import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
 
 
-export const petMockObjects: Record<string, IPetModel> = {
+export const petMockObjects: Record<string, PetDto> = {
   // todo mock
   '1': {
     id: 1,
@@ -25,8 +26,9 @@ export const petMockObjects: Record<string, IPetModel> = {
 };
 
 @injectable()
-export class PetsController extends BaseController implements IPetsController{
+export class PetsController extends BaseController implements IPetsController {
   context = ROUTE_NAME.PETS;
+
   constructor(logger: ILogger) {
     super(logger);
     this.bindRouter([{
@@ -57,17 +59,17 @@ export class PetsController extends BaseController implements IPetsController{
     ], this.context);
   }
 
-  getPets(request: Request<unknown, unknown, unknown, {hasTail: string}>, response: Response) {
+  getPets(request: Request<unknown, unknown, unknown, { hasTail: string }>, response: Response) {
     const { hasTail } = request.query;
-    if('true' === hasTail){
-      this.send(response, 200, Object.values(petMockObjects).filter(item => item.hasTail));
-      return;
-    }   
-    if('false' === hasTail){
-      this.send(response, 200, Object.values(petMockObjects).filter(item => !item.hasTail));
+    if ('true' === hasTail) {
+      this.send(response, 200, getArrayFromRecord(petMockObjects).filter(item => item.hasTail));
       return;
     }
-    this.send(response, 200, petMockObjects);
+    if ('false' === hasTail) {
+      this.send(response, 200, getArrayFromRecord(petMockObjects).filter(item => !item.hasTail));
+      return;
+    }
+    this.send(response, 200, getArrayFromRecord(petMockObjects));
   }
 
   getPetById(request: Request<WithId>, response: Response, next: NextFunction) {
@@ -79,7 +81,7 @@ export class PetsController extends BaseController implements IPetsController{
     next(new HTTPError(404, `Домашний питомец по id ${id} не найден`, this.context));
   }
 
-  createPet(request: Request<unknown, unknown, IPetModel>, response: Response, next: NextFunction) {
+  createPet(request: Request<unknown, unknown, CreatePetDto>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body && 'hasTail' in body) {
       const id = -new Date();
@@ -101,12 +103,12 @@ export class PetsController extends BaseController implements IPetsController{
     next(new HTTPError(404, `Питомец по id ${id} не найден`, this.context));
   }
 
-  updatePet(request: Request<WithId, IPetModel, IPetModel>, response: Response, next: NextFunction) {
-    const { body: { id: bodyId, ...restBody } } = request;
+  updatePet(request: Request<WithId, UpdatePetDto, UpdatePetDto>, response: Response, next: NextFunction) {
+    const { body } = request;
     const { id } = request.params;
     if (petMockObjects[id]) {
-      if ('hasTail' in restBody && 'name' in restBody) {
-        petMockObjects[id] = { id: Number(id), ...restBody };
+      if ('hasTail' in body && 'name' in body) {
+        petMockObjects[id] = { id: Number(id), ...body };
         this.ok(response, petMockObjects[id]);
         return;
       }
