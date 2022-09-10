@@ -17,12 +17,13 @@ describe('/pets', () => {
   it('GET /pets', async () => {
     await request(app)
       .get('/pets')
-      .expect(200, getArrayFromRecord(petMockObjects));
+      .expect(200, getArrayFromRecord(petMockObjects).map(item => item.plainObject));
   });
 
   it('GET /pets with query', async () => {
     const getExpectedValue = (withTails: boolean) => {
-      return getArrayFromRecord(petMockObjects).filter(item => withTails ? item.hasTail : !item.hasTail);
+      return getArrayFromRecord(petMockObjects)
+        .filter(item => withTails ? item.hasTail : !item.hasTail).map(item => item.plainObject);
     };
     await request(app)
       .get('/pets?hasTail=true')
@@ -36,7 +37,7 @@ describe('/pets', () => {
     const findItemId = 1;
     await request(app)
       .get(`/pets/${findItemId}`)
-      .expect(200, petMockObjects[findItemId]);
+      .expect(200, petMockObjects[findItemId]?.plainObject);
   });
   it('GET /pets/321', async () => {
     const findItemId = 321;
@@ -51,7 +52,7 @@ describe('/pets', () => {
     };
     request(app)
       .get(`/pets/${id}`)
-      .expect(200, petMockObjects[id]);
+      .expect(200, petMockObjects[id]?.plainObject);
 
     request(app)
       .put(`/pets/${id}`)
@@ -76,7 +77,7 @@ describe('/pets', () => {
 
   it('DELETE /pets/1', async () => {
     const findItemId = 1;
-    await request(app).get(`/pets/${findItemId}`).expect(200, petMockObjects[findItemId]);
+    await request(app).get(`/pets/${findItemId}`).expect(200, petMockObjects[findItemId]?.plainObject);
     await request(app).delete(`/pets/${findItemId}`).expect(200);
     await request(app).delete(`/pets/${findItemId}`).expect(404);
   });

@@ -16,14 +16,14 @@ describe('/example', () => {
   it('GET /example', async () => {
     await request(app)
       .get('/example')
-      .expect(200, getArrayFromRecord(exampleObject));
+      .expect(200, getArrayFromRecord(exampleObject).map(item => item.plainObject));
   });
 
   it('GET /example/1', async () => {
     const findItemId = 1;
     await request(app)
       .get(`/example/${findItemId}`)
-      .expect(200, exampleObject[findItemId]);
+      .expect(200, exampleObject[findItemId]?.plainObject);
   });
   it('GET /example/321', async () => {
     const findItemId = 321;
@@ -37,7 +37,7 @@ describe('/example', () => {
     };
     request(app)
       .get(`/example/${id}`)
-      .expect(200, exampleObject[id]);
+      .expect(200, exampleObject[id]?.plainObject);
 
     request(app)
       .put('/example/1')
@@ -62,7 +62,7 @@ describe('/example', () => {
 
   it('DELETE /example/1', async () => {
     const findItemId = 1;
-    await request(app).get(`/example/${findItemId}`).expect(200, exampleObject[findItemId]);
+    await request(app).get(`/example/${findItemId}`).expect(200, exampleObject[findItemId]?.plainObject);
     await request(app).delete(`/example/${findItemId}`).expect(200);
     await request(app).delete(`/example/${findItemId}`).expect(400);
   });

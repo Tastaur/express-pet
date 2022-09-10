@@ -17,14 +17,14 @@ describe('/users', () => {
   it('GET /users', async () => {
     await request(app)
       .get('/users')
-      .expect(200, getArrayFromRecord(usersObject));
+      .expect(200, getArrayFromRecord(usersObject).map(item => item.plainObject));
   });
 
   it('GET /users/1', async () => {
     const findItemId = 1;
     await request(app)
       .get(`/users/${findItemId}`)
-      .expect(200, usersObject[findItemId]);
+      .expect(200, usersObject[findItemId]?.plainObject);
   });
   it('GET /users/321', async () => {
     const findItemId = 321;
@@ -36,10 +36,11 @@ describe('/users', () => {
     const changes: UpdateUserDto = {
       name: 'changes',
       age: 44,
+      email: 'change email',
     };
     request(app)
       .get(`/users/${id}`)
-      .expect(200, usersObject[id]);
+      .expect(200, usersObject[id]?.plainObject);
 
     request(app)
       .put(`/users/${id}`)
@@ -64,7 +65,7 @@ describe('/users', () => {
 
   it('DELETE /users/1', async () => {
     const findItemId = 1;
-    await request(app).get(`/users/${findItemId}`).expect(200, usersObject[findItemId]);
+    await request(app).get(`/users/${findItemId}`).expect(200, usersObject[findItemId]?.plainObject);
     await request(app).delete(`/users/${findItemId}`).expect(200);
     await request(app).delete(`/users/${findItemId}`).expect(404);
   });
@@ -73,6 +74,7 @@ describe('/users', () => {
     const item: CreateUserDto = {
       name: 'Example',
       age: 24,
+      email: 'email',
     };
     request(app)
       .post('/users')

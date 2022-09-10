@@ -12,11 +12,12 @@ import { IUserController } from "./user.controller.interface";
 
 // todo mock
 export const usersObject: Record<string, UserDto> = {
-  '1': {
-    id: '1',
-    name: 'First User',
-    age: 28,
-  },
+  '1': new UserDto({
+    id: 1,
+    name: 'Name',
+    email: 'email',
+    age: 24,
+  }),
 };
 
 @injectable()
@@ -53,13 +54,13 @@ export class UsersController extends BaseController implements IUserController{
   }
 
   getUsers(request: Request, response: Response) {
-    this.send(response, 200, getArrayFromRecord(usersObject));
+    this.send(response, 200, getArrayFromRecord(usersObject).map(item => item.plainObject));
   }
 
   getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    if (id in usersObject) {
-      this.send(response, 200, usersObject[id]);
+    if (usersObject[id]) {
+      this.send(response, 200, usersObject[id]?.plainObject);
       return;
     }
     next(new HTTPError(404, 'Пользователь по данному id не найдено', this.context));
@@ -68,10 +69,9 @@ export class UsersController extends BaseController implements IUserController{
   createUser(request: Request<unknown, unknown, CreateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body && 'age' in body) {
-      const id = String(-new Date());
-      const result = { ...body, id };
-      usersObject[id] = result;
-      this.created(response, result);
+      const newUser = new UserDto(body);
+      usersObject[newUser.id] = newUser;
+      this.created(response, newUser.plainObject);
       return;
     }
     next(new HTTPError(400, 'Для создания пользователя надо ввести age и name', this.context));
@@ -91,9 +91,9 @@ export class UsersController extends BaseController implements IUserController{
     const { body } = request;
     const { id } = request.params;
     if (usersObject[id]) {
-      if('name' in body && 'age' in body){
-        usersObject[id] = { ...body, id };
-        this.ok(response, usersObject[id]);
+      if ('name' in body && 'age' in body && 'email' in body) {
+        usersObject[id]!.updateUser(body);
+        this.ok(response, usersObject[id]?.plainObject);
         return;
       }
       next(new HTTPError(400, 'Не заполнены поля name и age', this.context));

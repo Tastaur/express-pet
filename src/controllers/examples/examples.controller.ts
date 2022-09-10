@@ -12,10 +12,10 @@ import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
 
 // todo mock
 export const exampleObject: Record<string, ExampleDto> = {
-  '1': {
-    id: '1',
-    name: 'Example',
-  },
+  '1': new ExampleDto(
+    1,
+    'Example',
+  ),
 };
 
 @injectable()
@@ -53,13 +53,13 @@ export class ExampleController extends BaseController implements IExampleControl
   }
 
   getAllExamples(request: Request, response: Response) {
-    this.send(response, 200, getArrayFromRecord(exampleObject));
+    this.send(response, 200, getArrayFromRecord(exampleObject).map(item => item.plainObject));
   }
 
   getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
     if (id in exampleObject) {
-      this.send(response, 200, exampleObject[id]);
+      this.send(response, 200, exampleObject[id]?.plainObject);
       return;
     }
     next(new HTTPError(404, `Примера по id ${id} не найдено`, this.context));
@@ -68,10 +68,10 @@ export class ExampleController extends BaseController implements IExampleControl
   createExample(request: Request<unknown, unknown, CreateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
     if ('name' in body) {
-      const id = String(-new Date());
-      const result = { ...body, id };
+      const id = -new Date();
+      const result = new ExampleDto(id, body.name);
       exampleObject[id] = result;
-      this.created(response, result);
+      this.created(response, result.plainObject);
       return;
     }
     next(new HTTPError(400, 'Для создания примера необходимо ввести название', this.context));
@@ -92,8 +92,8 @@ export class ExampleController extends BaseController implements IExampleControl
     const { id } = request.params;
     if (exampleObject[id]) {
       if ('name' in body) {
-        exampleObject[id]!.name = body.name;
-        this.ok(response, exampleObject[id]);
+        exampleObject[id]?.setName(body.name);
+        this.ok(response, exampleObject[id]?.plainObject);
         return;
       }
       next(new HTTPError(400, 'Для редактирования необходимо ввести name', this.context));
