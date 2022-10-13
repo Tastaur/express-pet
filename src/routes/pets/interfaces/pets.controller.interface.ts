@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { WithId } from "globalTypes";
-import { IBaseController } from "services/baseController/base.controller.interface";
+import { IBaseController } from "common/baseController/base.controller.interface";
 import { UpdatePetDto } from "./dto";
 
 

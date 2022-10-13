@@ -5,9 +5,10 @@ export enum SERVICE_TYPES {
   Application = 'application',
   ILogger = 'ILogger',
   IExceptionFilter = 'ExceptionFilter',
-  Example = 'Example',
-  Users = 'Users',
-  Pets = 'Pets'
+  ExampleController = 'ExampleController',
+  UsersController = 'UsersController',
+  UsersService = 'UsersService',
+  PetsController = 'PetsController'
 }
 
 

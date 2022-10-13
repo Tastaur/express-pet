@@ -1,10 +1,12 @@
 import { hash } from "bcryptjs";
+import { UpdateUserDto } from "./update-user.dto";
 
 
 export interface IUserData {
   name: string,
   age: number,
   email: string,
+  password: string,
   id?: number,
 }
 
@@ -15,11 +17,12 @@ export class UserDto {
   private _email: string;
   private _password: string;
 
-  constructor({ id, email, age, name }: IUserData) {
+  constructor({ id, email, age, name, password }: IUserData) {
     this._id = id || -new Date();
     this._email = email;
     this._age = age;
     this._name = name;
+    this._password = password;
   }
 
   get name() {
@@ -38,8 +41,12 @@ export class UserDto {
     return this._id;
   }
 
+  get password() {
+    return this._password;
+  }
+
   public async setPassword(pass: string) {
-    this._password = await hash(pass, process.env.SALT || '');
+    this._password = await hash(pass, Number.parseInt(process.env.SALT || '0', 10));
   }
 
   setName(name: string) {
@@ -54,18 +61,20 @@ export class UserDto {
     this._email = email;
   }
 
-  updateUser = ({ email, age, name }: IUserData) => {
-    this.setName(name);
-    this.setEmail(email);
-    this.setAge(age);
+  updateUser = ({ email, age, name, password }: UpdateUserDto) => {
+    name && this.setName(name);
+    email && this.setEmail(email);
+    age && this.setAge(age);
+    password && this.setPassword(password);
   };
 
-  get plainObject() {
+  get plainObject(): IUserData {
     return {
       id: this.id,
       email: this.email,
       age: this.age,
       name: this.name,
+      password: this._password,
     };
   }
 

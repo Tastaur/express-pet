@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { WithId } from "../../globalTypes";
-import { IBaseController } from "../../services/baseController/base.controller.interface";
-import { UpdateExampleDto } from "../../controllers/examples/dto";
+import { WithId } from "../../../globalTypes";
+import { IBaseController } from "../../../common/baseController/base.controller.interface";
+import { UpdateExampleDto } from "../../examples/dto";
 
 
 export interface IExampleController extends IBaseController {

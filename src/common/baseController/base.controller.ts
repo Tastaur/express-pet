@@ -4,13 +4,13 @@ import { BaseRouterInterface } from "./base.router.interface";
 import { ROUTE_NAME } from "../../globalConstants";
 import { ILogger } from "../logger/logger.interface";
 import { inject, injectable } from "inversify";
-import { SERVICE_TYPES } from "../../globalTypes";
 import 'reflect-metadata';
 import { IBaseController } from "./base.controller.interface";
+import { SERVICE_TYPES } from "../../globalTypes";
 
 
 @injectable()
-export class BaseController implements IBaseController{
+export class BaseController implements IBaseController {
   private readonly _router: Router;
 
   constructor(@inject(SERVICE_TYPES.ILogger) private logger: ILogger) {
@@ -37,9 +37,11 @@ export class BaseController implements IBaseController{
   }
 
   protected bindRouter(routes: BaseRouterInterface[], context: ROUTE_NAME) {
-    for (const { func, method, path } of routes) {
+    for (const { func, method, path, middlewares } of routes) {
       this.logger.log(`Подкюлчен: [${context}] ${method.toLocaleUpperCase()} ${path}`);
-      this.router[method](path, func.bind(this));
+      const boundMiddlewares = middlewares?.map(m => m.execute.bind(m));
+      const boundFunction = func.bind(this);
+      this.router[method](path, boundMiddlewares ? [...boundMiddlewares, boundFunction] : boundFunction);
     }
   }
 }

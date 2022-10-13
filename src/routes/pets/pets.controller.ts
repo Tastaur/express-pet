@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { BaseController } from "../../services/baseController/base.controller";
+import { BaseController } from "../../common/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
-import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
+import { HTTPError } from "../../common/exceptionFIlter/http-error.class";
 import { WithId } from "../../globalTypes";
 import { injectable } from "inversify";
-import { ILogger } from "../../services/logger/logger.interface";
+import { ILogger } from "../../common/logger/logger.interface";
 import 'reflect-metadata';
-import { IPetsController } from "./pets.controller.interface";
+import { IPetsController } from "./interfaces/pets.controller.interface";
 import { CreatePetDto, PetDto, UpdatePetDto } from "./dto";
 import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
 

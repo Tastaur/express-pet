@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { BaseController } from "../../services/baseController/base.controller";
+import { BaseController } from "../../common/baseController/base.controller";
 import { ROUTE_NAME } from "../../globalConstants";
-import { HTTPError } from "../../services/exceptionFIlter/http-error.class";
-import { WithId } from "../../globalTypes";
-import { ILogger } from "../../services/logger/logger.interface";
-import { injectable } from "inversify";
+import { HTTPError } from "../../common/exceptionFIlter/http-error.class";
+import { SERVICE_TYPES, WithId } from "../../globalTypes";
+import { ILogger } from "../../common/logger/logger.interface";
+import { inject, injectable } from "inversify";
 import 'reflect-metadata';
-import { IExampleController } from "./example.controller.interface";
 import { CreateExampleDto, ExampleDto, UpdateExampleDto } from "./dto";
 import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
+import { IExampleController } from "./interfaces/example.controller.interface";
 
 // todo mock
 export const exampleObject: Record<string, ExampleDto> = {
@@ -22,7 +22,9 @@ export const exampleObject: Record<string, ExampleDto> = {
 export class ExampleController extends BaseController implements IExampleController {
   context = ROUTE_NAME.EXAMPLE;
 
-  constructor(logger: ILogger) {
+  constructor(
+    @inject(SERVICE_TYPES.ILogger) logger: ILogger,
+  ) {
     super(logger);
     this.bindRouter([{
       method: 'get',

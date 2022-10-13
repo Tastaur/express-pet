@@ -36,7 +36,6 @@ describe('/users', () => {
     const changes: UpdateUserDto = {
       name: 'changes',
       age: 44,
-      email: 'change email',
     };
     request(app)
       .get(`/users/${id}`)
@@ -53,14 +52,20 @@ describe('/users', () => {
   });
 
   it('PUT /users bad request', (done) => {
+    const userId = 1;
+    const currentUser = { ...usersObject[userId]?.plainObject };
     const changes = {
       id: 1,
       ne: 'changes',
     };
     request(app)
-      .put('/users/1')
+      .put(`/users/${userId}`)
       .send(changes)
-      .expect(400, done);
+      .expect(200, done);
+
+    request(app)
+      .get(`/users/${userId}`)
+      .expect(200, currentUser);
   });
 
   it('DELETE /users/1', async () => {
@@ -74,7 +79,8 @@ describe('/users', () => {
     const item: CreateUserDto = {
       name: 'Example',
       age: 24,
-      email: 'email',
+      email: 'email@email.com',
+      password: 'password',
     };
     request(app)
       .post('/users')
@@ -90,7 +96,7 @@ describe('/users', () => {
     request(app)
       .post('/users')
       .send(item)
-      .expect(400, done);
+      .expect(422, done);
 
     request(app)
       .get(`/users/${item.id}`)

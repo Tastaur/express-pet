@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { WithId } from "globalTypes";
-import { IBaseController } from "services/baseController/base.controller.interface";
-import { UpdateUserDto } from "controllers/users/dto";
+import { IBaseController } from "common/baseController/base.controller.interface";
+import { UpdateUserDto } from "routes/users/dto";
 
 
 export interface IUserController extends IBaseController {
