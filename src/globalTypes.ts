@@ -8,10 +8,13 @@ export enum SERVICE_TYPES {
   ExampleController = 'ExampleController',
   UsersController = 'UsersController',
   UsersService = 'UsersService',
-  PetsController = 'PetsController'
+  PetsController = 'PetsController',
+  PetsService = 'PetsService'
 }
 
 
-export interface WithId extends ParamsDictionary{
-  id: string
+export interface WithId extends ParamsDictionary {
+  id: string;
 }
+
+export type Nullable<T> = T | null

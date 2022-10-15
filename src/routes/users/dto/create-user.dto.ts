@@ -1,19 +1,20 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { VALIDATION_TYPE_MESSAGE } from "../../../globalConstants";
 
 
 export class CreateUserDto {
-  @IsString({ message: 'Ожидаемый тип - string' })
-  @IsNotEmpty({ message: "Поле не может быть пустым" })
+  @IsString({ message: VALIDATION_TYPE_MESSAGE.IS_STRING })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     name: string;
 
-  @IsNumber({}, { message: "Ожидаемый тип - number" })
-  @IsNotEmpty({ message: "Поле не может быть пустым" })
+  @IsNumber({}, { message: VALIDATION_TYPE_MESSAGE.IS_NUMBER })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     age: number;
 
-  @IsEmail({ }, { message: "Некорректная почта" })
-  @IsNotEmpty({ message: "Поле не может быть пустым" })
+  @IsEmail({}, { message: VALIDATION_TYPE_MESSAGE.IS_EMAIL })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     email: string;
 
-  @IsNotEmpty({ message: "Поле не может быть пустым" })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     password: string;
 }

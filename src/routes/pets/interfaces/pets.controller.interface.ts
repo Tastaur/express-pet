@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { WithId } from "globalTypes";
 import { IBaseController } from "common/baseController/base.controller.interface";
-import { UpdatePetDto } from "./dto";
+import { UpdatePetDto } from "../dto";
 
 
 export interface IPetsController extends IBaseController {

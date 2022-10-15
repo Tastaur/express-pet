@@ -1,11 +1,12 @@
-import { CreateUserDto, UpdateUserDto, UserDto } from "../dto";
+import { CreateUserDto, UpdateUserDto } from "../dto";
 import { IUserData } from "../dto/user.dto";
+import { Nullable } from "../../../globalTypes";
 
 
 export interface IUserService {
-  createUser: (dto: CreateUserDto) => Promise<UserDto | null>;
-  updateUser: (userId: string, dto: UpdateUserDto) => Promise<UserDto | null>
-  getUsers: () => Promise<IUserData[]>
-  getUserById: (userId: string) => Promise<UserDto | null>
-  deleteUser: (userId: string) => Promise<string | null>
+  createUser: (dto: CreateUserDto) => Promise<Nullable<IUserData>>;
+  updateUser: (userId: string, dto: UpdateUserDto) => Promise<Nullable<IUserData>>;
+  getUsers: () => Promise<IUserData[]>;
+  getUserById: (userId: string) => Promise<Nullable<IUserData>>;
+  deleteUser: (userId: string) => Promise<Nullable<string>>;
 }

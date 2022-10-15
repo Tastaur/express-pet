@@ -1,19 +1,24 @@
-import { IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { VALIDATION_TYPE_MESSAGE } from "../../../globalConstants";
 
 
 export class UpdateUserDto {
   @IsOptional()
-  @IsString({ message: 'Ожидаемый тип - string' })
+  @IsString({ message: VALIDATION_TYPE_MESSAGE.IS_STRING })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     name?: string;
 
   @IsOptional()
-  @IsNumber({},{ message: 'Ожидаемый тип - number' })
+  @IsNumber({}, { message: VALIDATION_TYPE_MESSAGE.IS_NUMBER })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     age?: number;
 
   @IsOptional()
-  @IsEmail({},{ message: 'Указан не корретный e-mail' })
+  @IsEmail({}, { message: VALIDATION_TYPE_MESSAGE.IS_EMAIL })
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     email?: string;
 
   @IsOptional()
+  @IsNotEmpty({ message: VALIDATION_TYPE_MESSAGE.IS_NOT_EMPTY })
     password?: string;
 }

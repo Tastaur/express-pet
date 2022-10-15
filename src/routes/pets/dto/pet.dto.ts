@@ -1,7 +1,15 @@
+import { UpdatePetDto } from "./update-pet.dto";
+
+
 export interface IPetDtoData {
   id?: number;
   name: string;
   hasTail: boolean;
+}
+
+
+export interface IPetDtoPlainObject extends Required<IPetDtoData> {
+  id: number;
 }
 
 export class PetDto {
@@ -35,12 +43,12 @@ export class PetDto {
     this._hasTail = hasTail;
   }
 
-  public updatePet({ name, hasTail }: IPetDtoData) {
-    this.setName(name);
-    this.setHasTail(hasTail);
+  public updatePet({ name, hasTail }: UpdatePetDto) {
+    name && this.setName(name);
+    "boolean" == typeof hasTail && this.setHasTail(hasTail);
   }
 
-  get plainObject() {
+  get plainObject(): IPetDtoPlainObject {
     return {
       id: this.id,
       name: this.name,

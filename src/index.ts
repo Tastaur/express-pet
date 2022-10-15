@@ -13,6 +13,8 @@ import { IExampleController } from "./routes/examples/interfaces/example.control
 import { IPetsController } from "./routes/pets/interfaces/pets.controller.interface";
 import { IUserService } from "./routes/users/interfaces/user.service.interface";
 import { UserService } from "./routes/users/user.service";
+import { IPetsService } from "./routes/pets/interfaces/pets.service.interface";
+import { PetsService } from "./routes/pets/pets.service";
 
 
 const appBindings = new ContainerModule((bind) => {
@@ -22,6 +24,7 @@ const appBindings = new ContainerModule((bind) => {
   bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
   bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
   bind<IUserService>(SERVICE_TYPES.UsersService).to(UserService);
+  bind<IPetsService>(SERVICE_TYPES.PetsService).to(PetsService);
   bind<App>(SERVICE_TYPES.Application).to(App);
 });
 

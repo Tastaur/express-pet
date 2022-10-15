@@ -8,17 +8,22 @@ import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
 
 @injectable()
 export class UserService implements IUserService {
+  // add logic if equal instant exists
   async createUser(dto: CreateUserDto) {
     const user = new UserDto(dto);
     await user.setPassword(dto.password);
-    return user;
+    usersObject[user.id] = user;
+    return user.plainObject;
   }
 
   async updateUser(userId: string, dto: UpdateUserDto) {
     const currentUser = usersObject[userId];
     if (currentUser) {
-      currentUser.updateUser(dto);
-      return currentUser;
+      const user = new UserDto(currentUser);
+      user.updateUser(dto);
+      const plainUser = user.plainObject;
+      usersObject[userId] = plainUser;
+      return plainUser;
     }
     return null;
   }
@@ -36,7 +41,7 @@ export class UserService implements IUserService {
   }
 
   async getUsers() {
-    return getArrayFromRecord(usersObject).map(item => item.plainObject);
+    return getArrayFromRecord(usersObject);
   }
 
 }

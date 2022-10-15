@@ -17,14 +17,14 @@ describe('/users', () => {
   it('GET /users', async () => {
     await request(app)
       .get('/users')
-      .expect(200, getArrayFromRecord(usersObject).map(item => item.plainObject));
+      .expect(200, getArrayFromRecord(usersObject));
   });
 
   it('GET /users/1', async () => {
     const findItemId = 1;
     await request(app)
       .get(`/users/${findItemId}`)
-      .expect(200, usersObject[findItemId]?.plainObject);
+      .expect(200, usersObject[findItemId]);
   });
   it('GET /users/321', async () => {
     const findItemId = 321;
@@ -39,7 +39,7 @@ describe('/users', () => {
     };
     request(app)
       .get(`/users/${id}`)
-      .expect(200, usersObject[id]?.plainObject);
+      .expect(200, usersObject[id]);
 
     request(app)
       .put(`/users/${id}`)
@@ -53,7 +53,8 @@ describe('/users', () => {
 
   it('PUT /users bad request', (done) => {
     const userId = 1;
-    const currentUser = { ...usersObject[userId]?.plainObject };
+
+    const currentUser = { ...usersObject[userId] };
     const changes = {
       id: 1,
       ne: 'changes',
@@ -70,7 +71,7 @@ describe('/users', () => {
 
   it('DELETE /users/1', async () => {
     const findItemId = 1;
-    await request(app).get(`/users/${findItemId}`).expect(200, usersObject[findItemId]?.plainObject);
+    await request(app).get(`/users/${findItemId}`).expect(200, usersObject[findItemId]);
     await request(app).delete(`/users/${findItemId}`).expect(200);
     await request(app).delete(`/users/${findItemId}`).expect(404);
   });
