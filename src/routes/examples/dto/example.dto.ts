@@ -1,8 +1,21 @@
+export interface ExampleEntity {
+  id?: number,
+  name: string
+}
+
+export interface ExampleEntityDto extends Required<ExampleEntity> {
+  id: number,
+}
+
 export class ExampleDto {
+  private readonly _id: number;
+  private _name: string;
+
   constructor(
-    private readonly _id: number,
-    private _name: string,
+    { name, id }: ExampleEntity,
   ) {
+    this._name = name;
+    this._id = id || -new Date();
   }
 
   get name(): string {
@@ -17,7 +30,7 @@ export class ExampleDto {
     this._name = name;
   }
 
-  get plainObject() {
+  get plainObject(): ExampleEntityDto {
     return {
       id: this.id,
       name: this.name,

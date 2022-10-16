@@ -15,6 +15,8 @@ import { IUserService } from "./routes/users/interfaces/user.service.interface";
 import { UserService } from "./routes/users/user.service";
 import { IPetsService } from "./routes/pets/interfaces/pets.service.interface";
 import { PetsService } from "./routes/pets/pets.service";
+import { IExampleService } from "./routes/examples/interfaces/example.service.interface";
+import { ExampleService } from "./routes/examples/example.service";
 
 
 const appBindings = new ContainerModule((bind) => {
@@ -25,6 +27,7 @@ const appBindings = new ContainerModule((bind) => {
   bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
   bind<IUserService>(SERVICE_TYPES.UsersService).to(UserService);
   bind<IPetsService>(SERVICE_TYPES.PetsService).to(PetsService);
+  bind<IExampleService>(SERVICE_TYPES.ExampleService).to(ExampleService);
   bind<App>(SERVICE_TYPES.Application).to(App);
 });
 

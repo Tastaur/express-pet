@@ -6,16 +6,18 @@ import { SERVICE_TYPES, WithId } from "../../globalTypes";
 import { ILogger } from "../../common/logger/logger.interface";
 import { inject, injectable } from "inversify";
 import 'reflect-metadata';
-import { CreateExampleDto, ExampleDto, UpdateExampleDto } from "./dto";
-import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
+import { CreateExampleDto, UpdateExampleDto } from "./dto";
 import { IExampleController } from "./interfaces/example.controller.interface";
+import { ExampleEntityDto } from "./dto/example.dto";
+import { IExampleService } from "./interfaces/example.service.interface";
+import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
 
 // todo mock
-export const exampleObject: Record<string, ExampleDto> = {
-  '1': new ExampleDto(
-    1,
-    'Example',
-  ),
+export const exampleObject: Record<string, ExampleEntityDto> = {
+  '1': {
+    id: 1,
+    name: 'Example',
+  },
 };
 
 @injectable()
@@ -23,9 +25,10 @@ export class ExampleController extends BaseController implements IExampleControl
   context = ROUTE_NAME.EXAMPLE;
 
   constructor(
-    @inject(SERVICE_TYPES.ILogger) logger: ILogger,
+    @inject(SERVICE_TYPES.ILogger) private loggerService: ILogger,
+    @inject(SERVICE_TYPES.ExampleService) private exampleService: IExampleService,
   ) {
-    super(logger);
+    super(loggerService);
     this.bindRouter([{
       method: 'get',
       path: '/',
@@ -40,6 +43,7 @@ export class ExampleController extends BaseController implements IExampleControl
       method: 'post',
       path: '/',
       func: this.createExample,
+      middlewares: [new ValidateMiddleware({ classToValidate: CreateExampleDto })],
     },
     {
       method: 'delete',
@@ -50,59 +54,58 @@ export class ExampleController extends BaseController implements IExampleControl
       method: 'put',
       path: '/:id',
       func: this.updateExample,
+      middlewares: [new ValidateMiddleware({
+        classToValidate: CreateExampleDto,
+        forbiddenEmpty: true,
+      })],
     },
     ], this.context);
   }
 
-  getAllExamples(request: Request, response: Response) {
-    this.send(response, 200, getArrayFromRecord(exampleObject).map(item => item.plainObject));
+  async getAllExamples(request: Request, response: Response) {
+    const examples = await this.exampleService.getExamples();
+    this.send(response, 200, examples);
   }
 
-  getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
+  async getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    if (id in exampleObject) {
-      this.send(response, 200, exampleObject[id]?.plainObject);
+    const currentExample = await this.exampleService.getExampleById(id);
+    if (currentExample) {
+      this.send(response, 200, currentExample);
       return;
     }
     next(new HTTPError(404, `Примера по id ${id} не найдено`, this.context));
   }
 
-  createExample(request: Request<unknown, unknown, CreateExampleDto>, response: Response, next: NextFunction) {
+  async createExample(request: Request<unknown, unknown, CreateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
-    if ('name' in body) {
-      const id = -new Date();
-      const result = new ExampleDto(id, body.name);
-      exampleObject[id] = result;
-      this.created(response, result.plainObject);
+    const newExample = await this.exampleService.createExample(body);
+    if (newExample) {
+      this.created(response, newExample);
       return;
     }
     next(new HTTPError(400, 'Для создания примера необходимо ввести название', this.context));
   }
 
-  deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
+  async deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    if (id in exampleObject) {
-      delete exampleObject[id];
-      this.ok(response, { id });
+    const deletedId = await this.exampleService.deleteExample(id);
+    if (deletedId) {
+      this.ok(response, { id: deletedId });
       return;
     }
-    next(new HTTPError(400, 'Не получилось удалить, так как пользователь не существует', this.context));
+    next(new HTTPError(400, 'Не получилось удалить, так как пример не существует', this.context));
   }
 
-  updateExample(request: Request<WithId, unknown, UpdateExampleDto>, response: Response, next: NextFunction) {
+  async updateExample(request: Request<WithId, unknown, UpdateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    if (exampleObject[id]) {
-      if ('name' in body) {
-        exampleObject[id]?.setName(body.name);
-        this.ok(response, exampleObject[id]?.plainObject);
-        return;
-      }
-      next(new HTTPError(400, 'Для редактирования необходимо ввести name', this.context));
+    const updatedExample = await this.exampleService.updateExample(id, body);
+    if (updatedExample) {
+      this.ok(response, updatedExample);
       return;
     }
     next(new HTTPError(404, 'Не удалось изменить - пользователь не найден', this.context));
-
   }
 }
 

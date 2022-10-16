@@ -9,7 +9,8 @@ export enum SERVICE_TYPES {
   UsersController = 'UsersController',
   UsersService = 'UsersService',
   PetsController = 'PetsController',
-  PetsService = 'PetsService'
+  PetsService = 'PetsService',
+  ExampleService = 'ExampleService'
 }
 
 
