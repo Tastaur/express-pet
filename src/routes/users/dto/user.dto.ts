@@ -45,8 +45,8 @@ export class UserDto {
     return this._password;
   }
 
-  public async setPassword(pass: string) {
-    this._password = await hash(pass, Number.parseInt(process.env.SALT || '0', 10));
+  public async setPassword(pass: string, salt: string) {
+    this._password = await hash(pass, Number.parseInt(salt, 10));
   }
 
   setName(name: string) {
@@ -61,11 +61,11 @@ export class UserDto {
     this._email = email;
   }
 
-  updateUser = ({ email, age, name, password }: UpdateUserDto) => {
+  updateUser = ({ email, age, name, password }: UpdateUserDto, salt?: string) => {
     name && this.setName(name);
     email && this.setEmail(email);
     age && this.setAge(age);
-    password && this.setPassword(password);
+    password && salt && this.setPassword(password, salt);
   };
 
   get plainObject(): IUserData {

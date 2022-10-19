@@ -4,6 +4,7 @@ import { ParamsDictionary } from "express-serve-static-core";
 export enum SERVICE_TYPES {
   Application = 'application',
   ILogger = 'ILogger',
+  IConfigService = 'IConfigService',
   IExceptionFilter = 'ExceptionFilter',
   ExampleController = 'ExampleController',
   UsersController = 'UsersController',

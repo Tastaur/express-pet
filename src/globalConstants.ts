@@ -11,3 +11,9 @@ export enum VALIDATION_TYPE_MESSAGE {
   IS_EMAIL = 'Введён некорректный email',
   IS_NOT_EMPTY = 'Поле не может быть пустым'
 }
+
+export enum ENV_KEY {
+  DATABASE_URL = 'DATABASE_URL',
+  PORT = 'PORT',
+  SALT = 'SALT'
+}

@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import { Server } from "http";
-import { ROUTE_NAME } from "./globalConstants";
+import { ENV_KEY, ROUTE_NAME } from "./globalConstants";
 import { ILogger } from "common/logger/logger.interface";
 import { inject, injectable } from "inversify";
 import { SERVICE_TYPES } from "./globalTypes";
@@ -9,6 +9,7 @@ import 'reflect-metadata';
 import { IUserController } from "./routes/users/interfaces/user.controller.interface";
 import { IExampleController } from "./routes/examples/interfaces/example.controller.interface";
 import { IPetsController } from "./routes/pets/interfaces/pets.controller.interface";
+import { IConfigService } from "./common/configService/config.service.interface";
 
 
 @injectable()
@@ -23,9 +24,10 @@ export class App {
     @inject(SERVICE_TYPES.UsersController) private users: IUserController,
     @inject(SERVICE_TYPES.ExampleController) private example: IExampleController,
     @inject(SERVICE_TYPES.PetsController) private pets: IPetsController,
+    @inject(SERVICE_TYPES.IConfigService) private config: IConfigService,
   ) {
     this.app = express();
-    this.port = process.env.PORT || 3005;
+    this.port = this.config.get(ENV_KEY.PORT) || 3005;
     this.app.use(express.json());
   }
 

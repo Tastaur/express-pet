@@ -17,11 +17,14 @@ import { IPetsService } from "./routes/pets/interfaces/pets.service.interface";
 import { PetsService } from "./routes/pets/pets.service";
 import { IExampleService } from "./routes/examples/interfaces/example.service.interface";
 import { ExampleService } from "./routes/examples/example.service";
+import { ConfigService } from "./common/configService/config.service";
+import { IConfigService } from "./common/configService/config.service.interface";
 
 
 const appBindings = new ContainerModule((bind) => {
-  bind<ILogger>(SERVICE_TYPES.ILogger).to(LoggerService);
-  bind<IExceptionFilter>(SERVICE_TYPES.IExceptionFilter).to(ExceptionFilter);
+  bind<ILogger>(SERVICE_TYPES.ILogger).to(LoggerService).inSingletonScope();
+  bind<IConfigService>(SERVICE_TYPES.IConfigService).to(ConfigService).inSingletonScope();
+  bind<IExceptionFilter>(SERVICE_TYPES.IExceptionFilter).to(ExceptionFilter).inSingletonScope();
   bind<IUserController>(SERVICE_TYPES.UsersController).to(UsersController);
   bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
   bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
