@@ -1,12 +1,12 @@
 import { CreateUserDto, UpdateUserDto } from "../dto";
-import { IUserData } from "../dto/user.dto";
 import { Nullable } from "../../../globalTypes";
+import { UserModel } from "@prisma/client";
 
 
 export interface IUserService {
-  createUser: (dto: CreateUserDto) => Promise<Nullable<IUserData>>;
-  updateUser: (userId: string, dto: UpdateUserDto) => Promise<Nullable<IUserData>>;
-  getUsers: () => Promise<IUserData[]>;
-  getUserById: (userId: string) => Promise<Nullable<IUserData>>;
-  deleteUser: (userId: string) => Promise<Nullable<string>>;
+  createUser: (dto: CreateUserDto) => Promise<Nullable<UserModel>>;
+  updateUser: (userId: number, dto: UpdateUserDto) => Promise<Nullable<UserModel>>;
+  getUsers: () => Promise<UserModel[]>;
+  getUserById: (userId: number) => Promise<Nullable<UserModel>>;
+  deleteUser: (userId: number) => Promise<Nullable<UserModel>>;
 }

@@ -6,12 +6,17 @@ export enum SERVICE_TYPES {
   ILogger = 'ILogger',
   IConfigService = 'IConfigService',
   IExceptionFilter = 'ExceptionFilter',
+  PrismaService = 'PrismaService',
+
   ExampleController = 'ExampleController',
+  ExampleService = 'ExampleService',
+
   UsersController = 'UsersController',
   UsersService = 'UsersService',
+  UserRepository = 'UserRepository',
+
   PetsController = 'PetsController',
   PetsService = 'PetsService',
-  ExampleService = 'ExampleService'
 }
 
 
@@ -20,3 +25,4 @@ export interface WithId extends ParamsDictionary {
 }
 
 export type Nullable<T> = T | null
+export type NullablePromise<T> = Promise<Nullable<T>>

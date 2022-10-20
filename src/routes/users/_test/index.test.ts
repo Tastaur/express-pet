@@ -1,30 +1,41 @@
 import request from 'supertest';
-import { usersObject } from "../users.controller";
 import { CreateUserDto, UpdateUserDto } from "../dto";
 
-import { app as mainApp } from "../../../index";
+import { appContainer, app as mainApp } from "../../../index";
 import 'reflect-metadata';
-import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
+import { SERVICE_TYPES } from "../../../globalTypes";
+import { PrismaService } from "../../../database/prisma.service";
 
 
 const app = mainApp.app;
 const server = mainApp.server;
+const container = appContainer;
 
 describe('/users', () => {
-  beforeAll( async ()=>{
+  const mockObject = {
+    id: 1,
+    name: 'Name',
+    email: 'email',
+    age: 24,
+    password: 'password',
+  };
+  beforeAll(async () => {
     await server.close();
+    await (container.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.deleteMany({});
+    await (container.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.create({
+      data: mockObject,
+    });
   });
   it('GET /users', async () => {
     await request(app)
       .get('/users')
-      .expect(200, getArrayFromRecord(usersObject));
+      .expect(200, [mockObject]);
   });
 
   it('GET /users/1', async () => {
-    const findItemId = 1;
     await request(app)
-      .get(`/users/${findItemId}`)
-      .expect(200, usersObject[findItemId]);
+      .get(`/users/${mockObject.id}`)
+      .expect(200, mockObject);
   });
   it('GET /users/321', async () => {
     const findItemId = 321;
@@ -32,29 +43,28 @@ describe('/users', () => {
   });
 
   it('PUT /users', (done) => {
-    const id = '1';
     const changes: UpdateUserDto = {
       name: 'changes',
       age: 44,
     };
     request(app)
-      .get(`/users/${id}`)
-      .expect(200, usersObject[id]);
+      .get(`/users/${mockObject.id}`)
+      .expect(200, mockObject);
 
     request(app)
-      .put(`/users/${id}`)
+      .put(`/users/${mockObject.id}`)
       .send(changes)
       .expect(200, done);
 
     request(app)
-      .get(`/users/${id}`)
+      .get(`/users/${mockObject.id}`)
       .expect(200, changes);
   });
 
   it('PUT /users bad request', (done) => {
     const userId = 1;
 
-    const currentUser = { ...usersObject[userId] };
+    const currentUser = { ...mockObject };
     const changes = {
       id: 1,
       ne: 'changes',
@@ -70,8 +80,8 @@ describe('/users', () => {
   });
 
   it('DELETE /users/1', async () => {
-    const findItemId = 1;
-    await request(app).get(`/users/${findItemId}`).expect(200, usersObject[findItemId]);
+    const findItemId = mockObject.id;
+    await request(app).get(`/users/${findItemId}`).expect(200);
     await request(app).delete(`/users/${findItemId}`).expect(200);
     await request(app).delete(`/users/${findItemId}`).expect(404);
   });

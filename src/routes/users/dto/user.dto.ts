@@ -1,5 +1,6 @@
 import { hash } from "bcryptjs";
 import { UpdateUserDto } from "./update-user.dto";
+import { UserModel } from "@prisma/client";
 
 
 export interface IUserData {
@@ -68,7 +69,7 @@ export class UserDto {
     password && salt && this.setPassword(password, salt);
   };
 
-  get plainObject(): IUserData {
+  get plainObject(): UserModel {
     return {
       id: this.id,
       email: this.email,

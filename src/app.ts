@@ -10,6 +10,7 @@ import { IUserController } from "./routes/users/interfaces/user.controller.inter
 import { IExampleController } from "./routes/examples/interfaces/example.controller.interface";
 import { IPetsController } from "./routes/pets/interfaces/pets.controller.interface";
 import { IConfigService } from "./common/configService/config.service.interface";
+import { PrismaService } from "./database/prisma.service";
 
 
 @injectable()
@@ -25,6 +26,7 @@ export class App {
     @inject(SERVICE_TYPES.ExampleController) private example: IExampleController,
     @inject(SERVICE_TYPES.PetsController) private pets: IPetsController,
     @inject(SERVICE_TYPES.IConfigService) private config: IConfigService,
+    @inject(SERVICE_TYPES.PrismaService) private prismaService: PrismaService,
   ) {
     this.app = express();
     this.port = this.config.get(ENV_KEY.PORT) || 3005;
@@ -46,5 +48,6 @@ export class App {
     this.useExceptionFilter();
     this.server = this.app.listen(this.port);
     this.logger.log(`Запущено: ${this.port}`);
+    await this.prismaService.connection();
   };
 }

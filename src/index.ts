@@ -19,18 +19,27 @@ import { IExampleService } from "./routes/examples/interfaces/example.service.in
 import { ExampleService } from "./routes/examples/example.service";
 import { ConfigService } from "./common/configService/config.service";
 import { IConfigService } from "./common/configService/config.service.interface";
+import { PrismaService } from "./database/prisma.service";
+import { UserRepository } from "./routes/users/user.repository";
+import { IUserRepository } from "./routes/users/interfaces/user.repository.interface";
 
 
 const appBindings = new ContainerModule((bind) => {
   bind<ILogger>(SERVICE_TYPES.ILogger).to(LoggerService).inSingletonScope();
   bind<IConfigService>(SERVICE_TYPES.IConfigService).to(ConfigService).inSingletonScope();
   bind<IExceptionFilter>(SERVICE_TYPES.IExceptionFilter).to(ExceptionFilter).inSingletonScope();
+  bind<PrismaService>(SERVICE_TYPES.PrismaService).to(PrismaService).inSingletonScope();
+
   bind<IUserController>(SERVICE_TYPES.UsersController).to(UsersController);
-  bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
-  bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
   bind<IUserService>(SERVICE_TYPES.UsersService).to(UserService);
+  bind<IUserRepository>(SERVICE_TYPES.UserRepository).to(UserRepository);
+
+  bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
   bind<IPetsService>(SERVICE_TYPES.PetsService).to(PetsService);
+
+  bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
   bind<IExampleService>(SERVICE_TYPES.ExampleService).to(ExampleService);
+
   bind<App>(SERVICE_TYPES.Application).to(App);
 });
 
