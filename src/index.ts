@@ -22,6 +22,8 @@ import { IConfigService } from "./common/configService/config.service.interface"
 import { PrismaService } from "./database/prisma.service";
 import { UserRepository } from "./routes/users/user.repository";
 import { IUserRepository } from "./routes/users/interfaces/user.repository.interface";
+import { IPetsRepository } from "./routes/pets/interfaces/pets.repository.interface";
+import { PetsRepository } from "./routes/pets/pets.repository";
 
 
 const appBindings = new ContainerModule((bind) => {
@@ -36,6 +38,7 @@ const appBindings = new ContainerModule((bind) => {
 
   bind<IPetsController>(SERVICE_TYPES.PetsController).to(PetsController);
   bind<IPetsService>(SERVICE_TYPES.PetsService).to(PetsService);
+  bind<IPetsRepository>(SERVICE_TYPES.PetsRepository).to(PetsRepository);
 
   bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
   bind<IExampleService>(SERVICE_TYPES.ExampleService).to(ExampleService);

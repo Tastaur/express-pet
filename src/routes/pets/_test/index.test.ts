@@ -1,9 +1,10 @@
 import request from 'supertest';
-import { app as mainApp } from "../../../index";
+import { appContainer, app as mainApp } from "../../../index";
 import 'reflect-metadata';
-import { petMockObjects } from "../pets.controller";
 import { CreatePetDto, UpdatePetDto } from "../dto";
-import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
+import { PetModel } from "@prisma/client";
+import { SERVICE_TYPES } from "../../../globalTypes";
+import { PrismaService } from "../../../database/prisma.service";
 
 
 const app = mainApp.app;
@@ -11,10 +12,20 @@ const server = mainApp.server;
 
 
 describe('/pets', () => {
-  beforeAll( async ()=>{
+  let mockPet: PetModel = {
+    id: 1,
+    name: 'Bober',
+    hasTail: false,
+  };
+  const pets = [mockPet];
+  beforeAll(async () => {
     await server.close();
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.petModel.deleteMany({});
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.petModel.create({ data: mockPet })
+      .then(data => {
+        mockPet = { ...mockPet, ...data };
+      });
   });
-  const pets = getArrayFromRecord(petMockObjects);
   it('GET /pets', async () => {
     await request(app)
       .get('/pets')
@@ -38,10 +49,9 @@ describe('/pets', () => {
   });
 
   it('GET /pets/1', async () => {
-    const findItemId = 1;
     await request(app)
-      .get(`/pets/${findItemId}`)
-      .expect(200, petMockObjects[findItemId]);
+      .get(`/pets/${mockPet.id}`)
+      .expect(200, mockPet);
   });
   it('GET /pets/321', async () => {
     const findItemId = 321;
@@ -54,9 +64,10 @@ describe('/pets', () => {
       name: 'changes',
       hasTail: false,
     };
+    mockPet = { ...mockPet, ...changes };
     request(app)
       .get(`/pets/${id}`)
-      .expect(200, petMockObjects[id]);
+      .expect(200, mockPet);
 
     request(app)
       .put(`/pets/${id}`)
@@ -65,30 +76,28 @@ describe('/pets', () => {
 
     request(app)
       .get(`/pets/${id}`)
-      .expect(200, changes);
+      .expect(200, mockPet);
   });
 
   it('PUT /pets bad request', (done) => {
-    const id = 1;
-    const currentPet = { ...petMockObjects[id] };
+    const currentPet = { ...mockPet };
     const changes = {
       ne: 'changes',
     };
-
     request(app)
-      .put(`/pets/${id}`)
+      .put(`/pets/${mockPet.id}`)
       .send(changes)
-      .expect(200, done);
+      .expect(404, done);
 
     request(app)
-      .get(`/pets/${id}`)
+      .get(`/pets/${mockPet.id}`)
       .expect(200, currentPet);
 
   });
 
   it('DELETE /pets/1', async () => {
     const findItemId = 1;
-    await request(app).get(`/pets/${findItemId}`).expect(200, petMockObjects[findItemId]);
+    await request(app).get(`/pets/${findItemId}`).expect(200, mockPet);
     await request(app).delete(`/pets/${findItemId}`).expect(200);
     await request(app).delete(`/pets/${findItemId}`).expect(404);
   });

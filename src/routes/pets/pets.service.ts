@@ -1,47 +1,36 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import "reflect-metadata";
 import { IPetsService } from "./interfaces/pets.service.interface";
-import { CreatePetDto, PetDto, UpdatePetDto } from "./dto";
-import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
-import { filterByStringBoolean } from "../../utils/filterByStringBoolean";
-import { petMockObjects } from "./pets.controller";
+import { CreatePetDto, UpdatePetDto } from "./dto";
+import { SERVICE_TYPES } from "../../globalTypes";
+import { IPetsRepository } from "./interfaces/pets.repository.interface";
 
 
 @injectable()
 export class PetsService implements IPetsService {
-  async getPetById(id: string) {
-    return petMockObjects[id] || null;
+  constructor(
+    @inject(SERVICE_TYPES.PetsRepository) private petsRepository: IPetsRepository,
+  ) {
+  }
+
+  async getPetById(id: number) {
+    return this.petsRepository.getPetById(id);
   }
 
   async getPets(hasTail?: string) {
-    return getArrayFromRecord(petMockObjects)
-      .filter(item => filterByStringBoolean(item.hasTail, hasTail));
+    return this.petsRepository.getPets(hasTail);
   }
 
-  async deletePet(id: string) {
-    if (id in petMockObjects) {
-      delete petMockObjects[id];
-      return id;
-    }
-    return null;
+  async deletePet(id: number) {
+    return this.petsRepository.deletePet(id);
   }
 
   // add logic if equal instant exists
   async createPet(dto: CreatePetDto) {
-    const pet = new PetDto(dto);
-    petMockObjects[pet.id] = pet;
-    return pet.plainObject;
+    return this.petsRepository.createPet(dto);
   }
 
-  async updatePet(id: string, dto: UpdatePetDto) {
-    const currentPet = petMockObjects[id];
-    if (currentPet) {
-      const updatedPet = new PetDto(currentPet);
-      updatedPet.updatePet(dto);
-      const plainPet = updatedPet.plainObject;
-      petMockObjects[id] = plainPet;
-      return plainPet;
-    }
-    return null;
+  async updatePet(id: number, dto: UpdatePetDto) {
+    return this.petsRepository.updatePet(id, dto);
   }
 }

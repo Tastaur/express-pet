@@ -11,6 +11,7 @@ import { CreatePetDto, UpdatePetDto } from "./dto";
 import { IPetsService } from "./interfaces/pets.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
 import { IPetDtoPlainObject } from "./dto/pet.dto";
+import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
 
 
 export const petMockObjects: Record<string, IPetDtoPlainObject> = {
@@ -46,6 +47,7 @@ export class PetsController extends BaseController implements IPetsController {
       method: 'get',
       path: '/:id',
       func: this.getPetById,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'post',
@@ -59,15 +61,18 @@ export class PetsController extends BaseController implements IPetsController {
       method: 'delete',
       path: '/:id',
       func: this.deletePet,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'put',
       path: '/:id',
       func: this.updatePet,
-      middlewares: [new ValidateMiddleware({
-        classToValidate: UpdatePetDto,
-        forbiddenEmpty: true,
-      })],
+      middlewares: [
+        new CheckIdMiddleware(this.context),
+        new ValidateMiddleware({
+          classToValidate: UpdatePetDto,
+          forbiddenEmpty: true,
+        })],
     },
     ], this.context);
   }
@@ -80,7 +85,7 @@ export class PetsController extends BaseController implements IPetsController {
 
   async getPetById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const pet = await this.petService.getPetById(id);
+    const pet = await this.petService.getPetById(Number(id));
     if (pet) {
       this.send(response, 200, pet);
     } else {
@@ -100,9 +105,9 @@ export class PetsController extends BaseController implements IPetsController {
 
   async deletePet(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const deletedId = await this.petService.deletePet(id);
-    if (deletedId) {
-      this.ok(response, { id: deletedId });
+    const deletedPet = await this.petService.deletePet(Number(id));
+    if (deletedPet) {
+      this.ok(response, { id: deletedPet.id });
     } else {
       next(new HTTPError(404, `Питомец по id ${id} не найден`, this.context));
     }
@@ -111,7 +116,7 @@ export class PetsController extends BaseController implements IPetsController {
   async updatePet(request: Request<WithId, UpdatePetDto, UpdatePetDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const changedPet = await this.petService.updatePet(id, body);
+    const changedPet = await this.petService.updatePet(Number(id), body);
     if (changedPet) {
       this.ok(response, changedPet);
     } else {

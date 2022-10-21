@@ -22,11 +22,11 @@ export class App {
   constructor(
     @inject(SERVICE_TYPES.ILogger) private logger: ILogger,
     @inject(SERVICE_TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
+    @inject(SERVICE_TYPES.IConfigService) private config: IConfigService,
+    @inject(SERVICE_TYPES.PrismaService) private prismaService: PrismaService,
     @inject(SERVICE_TYPES.UsersController) private users: IUserController,
     @inject(SERVICE_TYPES.ExampleController) private example: IExampleController,
     @inject(SERVICE_TYPES.PetsController) private pets: IPetsController,
-    @inject(SERVICE_TYPES.IConfigService) private config: IConfigService,
-    @inject(SERVICE_TYPES.PrismaService) private prismaService: PrismaService,
   ) {
     this.app = express();
     this.port = this.config.get(ENV_KEY.PORT) || 3005;

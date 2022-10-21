@@ -10,6 +10,7 @@ import { CreateUserDto, UpdateUserDto } from "./dto";
 import { IUserController } from "./interfaces/user.controller.interface";
 import { IUserService } from "./interfaces/user.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
+import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
 
 
 @injectable()
@@ -30,6 +31,7 @@ export class UsersController extends BaseController implements IUserController {
       method: 'get',
       path: '/:id',
       func: this.getUserById,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'post',
@@ -41,12 +43,15 @@ export class UsersController extends BaseController implements IUserController {
       method: 'delete',
       path: '/:id',
       func: this.deleteUser,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'put',
       path: '/:id',
       func: this.updateUser,
-      middlewares: [new ValidateMiddleware({ classToValidate: UpdateUserDto, forbiddenEmpty: true })],
+      middlewares: [
+        new CheckIdMiddleware(this.context),
+        new ValidateMiddleware({ classToValidate: UpdateUserDto, forbiddenEmpty: true })],
     },
     ], this.context);
   }
@@ -58,12 +63,7 @@ export class UsersController extends BaseController implements IUserController {
 
   async getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const parsedId = Number.parseInt(id, 10);
-    if (Number.isNaN(parsedId)) {
-      next(new HTTPError(404, `Введён некорректный id пользователя`, this.context));
-      return;
-    }
-    const user = await this.userService.getUserById(parsedId);
+    const user = await this.userService.getUserById(Number(id));
     if (user) {
       this.send(response, 200, user);
       return;
@@ -83,12 +83,7 @@ export class UsersController extends BaseController implements IUserController {
 
   async deleteUser(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const parsedId = Number.parseInt(id, 10);
-    if (Number.isNaN(parsedId)) {
-      next(new HTTPError(404, `Введён некорректный id пользователя`, this.context));
-      return;
-    }
-    const deletedUser = await this.userService.deleteUser(parsedId);
+    const deletedUser = await this.userService.deleteUser(Number(id));
     if (deletedUser) {
       this.ok(response, { id: deletedUser.id });
       return;
@@ -99,12 +94,7 @@ export class UsersController extends BaseController implements IUserController {
   async updateUser(request: Request<WithId, unknown, UpdateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const parsedId = Number.parseInt(id, 10);
-    if (Number.isNaN(parsedId)) {
-      next(new HTTPError(404, `Введён некорректный id пользователя`, this.context));
-      return;
-    }
-    const updatedUser = await this.userService.updateUser(parsedId, body);
+    const updatedUser = await this.userService.updateUser(Number(id), body);
     if (updatedUser) {
       this.ok(response, updatedUser);
       return;

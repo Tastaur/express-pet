@@ -17,3 +17,9 @@ model UserModel {
     password String
     age     Int
 }
+
+model PetModel {
+    id      Int @id @default(autoincrement())
+    name    String
+    hasTail Boolean
+}

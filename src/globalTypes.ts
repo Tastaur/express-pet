@@ -17,6 +17,7 @@ export enum SERVICE_TYPES {
 
   PetsController = 'PetsController',
   PetsService = 'PetsService',
+  PetsRepository = 'PetsRepository'
 }
 
 
