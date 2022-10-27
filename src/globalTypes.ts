@@ -10,6 +10,7 @@ export enum SERVICE_TYPES {
 
   ExampleController = 'ExampleController',
   ExampleService = 'ExampleService',
+  ExampleRepository = 'ExampleRepository',
 
   UsersController = 'UsersController',
   UsersService = 'UsersService',

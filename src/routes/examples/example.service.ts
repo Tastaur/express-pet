@@ -1,45 +1,35 @@
 import 'reflect-metadata';
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { IExampleService } from "./interfaces/example.service.interface";
-import { getArrayFromRecord } from "../../utils/getArrayFromRecord";
-import { exampleObject } from "./examples.controller";
-import { CreateExampleDto, ExampleDto, UpdateExampleDto } from "./dto";
+import { CreateExampleDto, UpdateExampleDto } from "./dto";
+import { SERVICE_TYPES } from "../../globalTypes";
+import { IExampleRepository } from "./interfaces/example.repository.interface";
 
 
 @injectable()
 export class ExampleService implements IExampleService {
+  constructor(
+    @inject(SERVICE_TYPES.ExampleRepository) private exampleRepository: IExampleRepository,
+  ) {
+  }
+
   async getExamples() {
-    return getArrayFromRecord(exampleObject);
+    return this.exampleRepository.getExamples();
   }
 
-  async getExampleById(id: string) {
-    return exampleObject[id] || null;
+  async getExampleById(id: number) {
+    return this.exampleRepository.getExampleById(id).then((data) => data).catch(() => null);
   }
 
-  // todo add scenario when instance already exist
   async createExample(dto: CreateExampleDto) {
-    const result = new ExampleDto(dto);
-    const plainResult = result.plainObject;
-    exampleObject[result.id] = plainResult;
-    return plainResult;
+    return this.exampleRepository.createExample(dto);
   }
 
-  async deleteExample(id: string) {
-    if (id in exampleObject) {
-      delete exampleObject[id];
-      return id;
-    }
-    return null;
+  async deleteExample(id: number) {
+    return this.exampleRepository.deleteExample(id).then((data) => data).catch(() => null);
   }
 
-  async updateExample(id: string, dto: UpdateExampleDto) {
-    if (id) {
-      const currentExample = new ExampleDto({ id: Number(id), ...dto });
-      currentExample.setName(dto.name);
-      const plainExample = currentExample.plainObject;
-      exampleObject[id] = plainExample;
-      return plainExample;
-    }
-    return null;
+  async updateExample(id: number, dto: UpdateExampleDto) {
+    return this.exampleRepository.updateExample(id, dto).then((data) => data).catch(() => null);
   }
 }

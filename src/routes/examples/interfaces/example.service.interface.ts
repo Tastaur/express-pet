@@ -1,12 +1,12 @@
-import { ExampleEntityDto } from "../dto/example.dto";
 import { Nullable } from "../../../globalTypes";
 import { CreateExampleDto, UpdateExampleDto } from "../dto";
+import { ExampleModel } from "@prisma/client";
 
 
 export interface IExampleService {
-  getExamples: () => Promise<ExampleEntityDto[]>;
-  getExampleById: (id: string) => Promise<Nullable<ExampleEntityDto>>;
-  deleteExample: (id: string) => Promise<Nullable<string>>;
-  createExample: (dto: CreateExampleDto) => Promise<Nullable<ExampleEntityDto>>;
-  updateExample: (id: string, dto: UpdateExampleDto) => Promise<Nullable<ExampleEntityDto>>;
+  getExamples: () => Promise<ExampleModel[]>;
+  getExampleById: (id: number) => Promise<Nullable<ExampleModel>>;
+  deleteExample: (id: number) => Promise<Nullable<ExampleModel>>;
+  createExample: (dto: CreateExampleDto) => Promise<Nullable<ExampleModel>>;
+  updateExample: (id: number, dto: UpdateExampleDto) => Promise<Nullable<ExampleModel>>;
 }

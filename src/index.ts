@@ -24,6 +24,8 @@ import { UserRepository } from "./routes/users/user.repository";
 import { IUserRepository } from "./routes/users/interfaces/user.repository.interface";
 import { IPetsRepository } from "./routes/pets/interfaces/pets.repository.interface";
 import { PetsRepository } from "./routes/pets/pets.repository";
+import { IExampleRepository } from "./routes/examples/interfaces/example.repository.interface";
+import { ExampleRepository } from "./routes/examples/example.repository";
 
 
 const appBindings = new ContainerModule((bind) => {
@@ -42,6 +44,7 @@ const appBindings = new ContainerModule((bind) => {
 
   bind<IExampleController>(SERVICE_TYPES.ExampleController).to(ExampleController);
   bind<IExampleService>(SERVICE_TYPES.ExampleService).to(ExampleService);
+  bind<IExampleRepository>(SERVICE_TYPES.ExampleRepository).to(ExampleRepository);
 
   bind<App>(SERVICE_TYPES.Application).to(App);
 });

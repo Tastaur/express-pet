@@ -8,17 +8,10 @@ import { inject, injectable } from "inversify";
 import 'reflect-metadata';
 import { CreateExampleDto, UpdateExampleDto } from "./dto";
 import { IExampleController } from "./interfaces/example.controller.interface";
-import { ExampleEntityDto } from "./dto/example.dto";
 import { IExampleService } from "./interfaces/example.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
+import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
 
-// todo mock
-export const exampleObject: Record<string, ExampleEntityDto> = {
-  '1': {
-    id: 1,
-    name: 'Example',
-  },
-};
 
 @injectable()
 export class ExampleController extends BaseController implements IExampleController {
@@ -38,6 +31,7 @@ export class ExampleController extends BaseController implements IExampleControl
       method: 'get',
       path: '/:id',
       func: this.getExampleById,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'post',
@@ -49,6 +43,7 @@ export class ExampleController extends BaseController implements IExampleControl
       method: 'delete',
       path: '/:id',
       func: this.deleteExample,
+      middlewares: [new CheckIdMiddleware(this.context)],
     },
     {
       method: 'put',
@@ -57,7 +52,8 @@ export class ExampleController extends BaseController implements IExampleControl
       middlewares: [new ValidateMiddleware({
         classToValidate: CreateExampleDto,
         forbiddenEmpty: true,
-      })],
+      }),
+      new CheckIdMiddleware(this.context)],
     },
     ], this.context);
   }
@@ -69,7 +65,7 @@ export class ExampleController extends BaseController implements IExampleControl
 
   async getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const currentExample = await this.exampleService.getExampleById(id);
+    const currentExample = await this.exampleService.getExampleById(Number(id));
     if (currentExample) {
       this.send(response, 200, currentExample);
       return;
@@ -89,9 +85,9 @@ export class ExampleController extends BaseController implements IExampleControl
 
   async deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const deletedId = await this.exampleService.deleteExample(id);
-    if (deletedId) {
-      this.ok(response, { id: deletedId });
+    const deletedExample = await this.exampleService.deleteExample(Number(id));
+    if (deletedExample) {
+      this.ok(response, { id: deletedExample.id });
       return;
     }
     next(new HTTPError(400, 'Не получилось удалить, так как пример не существует', this.context));
@@ -100,7 +96,7 @@ export class ExampleController extends BaseController implements IExampleControl
   async updateExample(request: Request<WithId, unknown, UpdateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const updatedExample = await this.exampleService.updateExample(id, body);
+    const updatedExample = await this.exampleService.updateExample(Number(id), body);
     if (updatedExample) {
       this.ok(response, updatedExample);
       return;

@@ -1,29 +1,38 @@
 import request from 'supertest';
-import { exampleObject } from "../examples.controller";
 import { CreateExampleDto } from "../dto";
-import { app as mainApp } from "../../../index";
+import { appContainer, app as mainApp } from "../../../index";
 import 'reflect-metadata';
-import { getArrayFromRecord } from "../../../utils/getArrayFromRecord";
+import { SERVICE_TYPES } from "../../../globalTypes";
+import { PrismaService } from "../../../database/prisma.service";
+import { ExampleModel } from "@prisma/client";
 
 
 const app = mainApp.app;
 const server = mainApp.server;
 
 describe('/example', () => {
+  let example: ExampleModel = {
+    id: 1,
+    name: 'Example',
+  };
   beforeAll(async () => {
     await server.close();
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.exampleModel.deleteMany({});
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.exampleModel
+      .create({ data: { ...example } }).then((data) => {
+        example = { ...example, ...data };
+      });
   });
   it('GET /example', async () => {
     await request(app)
       .get('/example')
-      .expect(200, getArrayFromRecord(exampleObject));
+      .expect(200, [example]);
   });
 
   it('GET /example/1', async () => {
-    const findItemId = 1;
     await request(app)
-      .get(`/example/${findItemId}`)
-      .expect(200, exampleObject[findItemId]);
+      .get(`/example/${example.id}`)
+      .expect(200, example);
   });
   it('GET /example/321', async () => {
     const findItemId = 321;
@@ -31,13 +40,13 @@ describe('/example', () => {
   });
 
   it('PUT /example', (done) => {
-    const id = '1';
     const changes = {
       name: 'changes',
     };
+    example = { ...example, ...changes };
     request(app)
-      .get(`/example/${id}`)
-      .expect(200, exampleObject[id]);
+      .get(`/example/${example.id}`)
+      .expect(200, example);
 
     request(app)
       .put('/example/1')
@@ -46,7 +55,7 @@ describe('/example', () => {
 
     request(app)
       .get('/example/1')
-      .expect(200, changes);
+      .expect(200, example);
   });
 
   it('PUT /example bad request', (done) => {
@@ -61,10 +70,9 @@ describe('/example', () => {
 
 
   it('DELETE /example/1', async () => {
-    const findItemId = 1;
-    await request(app).get(`/example/${findItemId}`).expect(200, exampleObject[findItemId]);
-    await request(app).delete(`/example/${findItemId}`).expect(200);
-    await request(app).delete(`/example/${findItemId}`).expect(400);
+    await request(app).get(`/example/${example.id}`).expect(200, example);
+    await request(app).delete(`/example/${example.id}`).expect(200);
+    await request(app).delete(`/example/${example.id}`).expect(400);
   });
 
   it('POST /example', (done) => {

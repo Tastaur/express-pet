@@ -3,9 +3,6 @@ export interface ExampleEntity {
   name: string
 }
 
-export interface ExampleEntityDto extends Required<ExampleEntity> {
-  id: number,
-}
 
 export class ExampleDto {
   private readonly _id: number;
@@ -24,16 +21,5 @@ export class ExampleDto {
 
   get id(): number {
     return this._id;
-  }
-
-  setName(name: string) {
-    this._name = name;
-  }
-
-  get plainObject(): ExampleEntityDto {
-    return {
-      id: this.id,
-      name: this.name,
-    };
   }
 }
