@@ -8,4 +8,5 @@ export interface IUserRepository {
   updateUser: (user: UserModel) => NullablePromise<UserModel>;
   getUser: (id: number) => NullablePromise<UserModel>;
   deleteUser: (id: number) => NullablePromise<UserModel>;
+  login: (email: string) => NullablePromise<UserModel>;
 }

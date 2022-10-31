@@ -1,4 +1,4 @@
-import { hash } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 import { UpdateUserDto } from "./update-user.dto";
 import { UserModel } from "@prisma/client";
 
@@ -50,6 +50,10 @@ export class UserDto {
     this._password = await hash(pass, Number.parseInt(salt, 10));
   }
 
+  public async validatePass(pass: string) {
+    return compare(pass, this._password);
+  }
+
   setName(name: string) {
     this._name = name;
   }
@@ -62,12 +66,12 @@ export class UserDto {
     this._email = email;
   }
 
-  updateUser = ({ email, age, name, password }: UpdateUserDto, salt?: string) => {
+  public async updateUser({ email, age, name, password }: UpdateUserDto, salt?: string) {
     name && this.setName(name);
     email && this.setEmail(email);
     age && this.setAge(age);
-    password && salt && this.setPassword(password, salt);
-  };
+    password && salt && await this.setPassword(password, salt);
+  }
 
   get plainObject(): UserModel {
     return {

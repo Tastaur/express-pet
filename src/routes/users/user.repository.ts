@@ -25,14 +25,17 @@ export class UserRepository implements IUserRepository {
   }
 
   async createUser({ name, password, age, email }: UserModel) {
-    return this.client.userModel.create({
-      data: {
-        name,
-        password,
-        age,
-        email,
-      },
-    });
+    return new Promise<UserModel>(resolve => {
+      resolve(this.client.userModel.create({
+        data: {
+          name,
+          password,
+          age,
+          email,
+        },
+      }));
+    }).then(data => data)
+      .catch(() => null);
   }
 
   async updateUser({ id, ...rest }: UserModel) {
@@ -55,6 +58,14 @@ export class UserRepository implements IUserRepository {
       }));
     })
       .then((data: UserModel) => data)
+      .catch(() => null);
+  }
+
+  async login(email: string) {
+    return new Promise<UserModel | null>((resolve) => {
+      resolve(this.client.userModel.findFirst({ where: { email } }));
+    })
+      .then(data => data)
       .catch(() => null);
   }
 }

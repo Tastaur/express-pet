@@ -6,7 +6,7 @@ import { SERVICE_TYPES, WithId } from "../../globalTypes";
 import { inject, injectable } from "inversify";
 import { ILogger } from "../../common/logger/logger.interface";
 import 'reflect-metadata';
-import { CreateUserDto, UpdateUserDto } from "./dto";
+import { CreateUserDto, UpdateUserDto, UserLoginDto } from "./dto";
 import { IUserController } from "./interfaces/user.controller.interface";
 import { IUserService } from "./interfaces/user.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
@@ -53,6 +53,14 @@ export class UsersController extends BaseController implements IUserController {
         new CheckIdMiddleware(this.context),
         new ValidateMiddleware({ classToValidate: UpdateUserDto, forbiddenEmpty: true })],
     },
+    {
+      method: 'post',
+      path: '/login',
+      func: this.login,
+      middlewares: [
+        new ValidateMiddleware({ classToValidate: UserLoginDto }),
+      ],
+    },
     ], this.context);
   }
 
@@ -78,7 +86,7 @@ export class UsersController extends BaseController implements IUserController {
       this.created(response, user);
       return;
     }
-    next(new HTTPError(400, "Не удалось создать пользователя", this.context));
+    next(new HTTPError(400, "Пользователь уже существует", this.context));
   }
 
   async deleteUser(request: Request<WithId>, response: Response, next: NextFunction) {
@@ -100,6 +108,17 @@ export class UsersController extends BaseController implements IUserController {
       return;
     }
     next(new HTTPError(404, `Пользователь c id ${id} не найден`, this.context));
+  }
+
+  async login(request: Request<unknown, unknown, UserLoginDto>, response: Response, next: NextFunction) {
+    const { body } = request;
+    const data = await this.userService.login(body);
+    if (data instanceof HTTPError) {
+      next(new HTTPError(data.statusCode, data.message, this.context));
+      return;
+    }
+    const { password, ...userData } = data;
+    this.ok(response, userData);
   }
 }
 

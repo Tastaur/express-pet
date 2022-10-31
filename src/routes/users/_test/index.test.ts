@@ -19,6 +19,14 @@ describe('/users', () => {
     age: 24,
     password: 'password',
   };
+
+  const newCreatedUser: CreateUserDto = {
+    name: 'Example',
+    age: 24,
+    email: 'email@email.com',
+    password: 'password',
+  };
+
   beforeAll(async () => {
     await server.close();
     await (container.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.deleteMany({});
@@ -87,15 +95,10 @@ describe('/users', () => {
   });
 
   it('POST /users', (done) => {
-    const item: CreateUserDto = {
-      name: 'Example',
-      age: 24,
-      email: 'email@email.com',
-      password: 'password',
-    };
+
     request(app)
       .post('/users')
-      .send(item)
+      .send(newCreatedUser)
       .expect(201, done);
   });
 
@@ -112,5 +115,22 @@ describe('/users', () => {
     request(app)
       .get(`/users/${item.id}`)
       .expect(400);
+  });
+  it('POST /users/login correct', (done) => {
+    request(app).post('/users/login')
+      .send({ password: newCreatedUser.password, email: newCreatedUser.email })
+      .expect(200, done);
+  });
+
+  it('POST /users/login user does not exist', (done) => {
+    request(app).post('/users/login')
+      .send({ password: 'randomPass', email: 'random@email.com' })
+      .expect(404, done);
+  });
+
+  it('POST /users/login invalid pass', (done) => {
+    request(app).post('/users/login')
+      .send({ password: 'randomPass', email: newCreatedUser.email })
+      .expect(400, done);
   });
 });
