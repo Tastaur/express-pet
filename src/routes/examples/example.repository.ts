@@ -5,6 +5,7 @@ import { PrismaService } from "../../database/prisma.service";
 import { PrismaClient } from "@prisma/client";
 import { CreateExampleDto, UpdateExampleDto } from "./dto";
 import "reflect-metadata";
+import { HTTPError } from "../../common/exceptionFIlter/http-error.class";
 
 
 @injectable()
@@ -22,19 +23,23 @@ export class ExampleRepository implements IExampleRepository {
   }
 
   async getExampleById(id: number) {
-    return this.client.exampleModel.findUnique({ where: { id } });
+    return this.client.exampleModel.findUnique({ where: { id } })
+      .then(data => data || new HTTPError(404, `Пример по id ${id} не найден`));
   }
 
   async deleteExample(id: number) {
-    return this.client.exampleModel.delete({ where: { id } });
+    return this.client.exampleModel.delete({ where: { id } })
+      .then(data => data)
+      .catch(() => new HTTPError(404, `Пример по id ${id} не найден`));
   }
 
   async createExample(dto: CreateExampleDto) {
     return this.client.exampleModel.create({ data: { ...dto } });
   }
 
-
   async updateExample(id: number, dto: UpdateExampleDto) {
-    return this.client.exampleModel.update({ where: { id }, data: { ...dto } });
+    return this.client.exampleModel.update({ where: { id }, data: { ...dto } })
+      .then(data => data)
+      .catch(() => new HTTPError(404, `Пользователь с id ${id} не найден`));
   }
 }

@@ -11,6 +11,7 @@ import { IExampleController } from "./interfaces/example.controller.interface";
 import { IExampleService } from "./interfaces/example.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
 import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
+import { getHTTPErrorWithContext } from "../../utils/getHTTPErrorWithContext";
 
 
 @injectable()
@@ -65,43 +66,43 @@ export class ExampleController extends BaseController implements IExampleControl
 
   async getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const currentExample = await this.exampleService.getExampleById(Number(id));
-    if (currentExample) {
-      this.send(response, 200, currentExample);
+    const data = await this.exampleService.getExampleById(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
-    next(new HTTPError(404, `Примера по id ${id} не найдено`, this.context));
+    this.send(response, 200, data);
   }
 
   async createExample(request: Request<unknown, unknown, CreateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
-    const newExample = await this.exampleService.createExample(body);
-    if (newExample) {
-      this.created(response, newExample);
+    const data = await this.exampleService.createExample(body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
-    next(new HTTPError(400, 'Для создания примера необходимо ввести название', this.context));
+    this.created(response, data);
   }
 
   async deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const deletedExample = await this.exampleService.deleteExample(Number(id));
-    if (deletedExample) {
-      this.ok(response, { id: deletedExample.id });
+    const data = await this.exampleService.deleteExample(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
-    next(new HTTPError(400, 'Не получилось удалить, так как пример не существует', this.context));
+    this.ok(response, { id: data.id });
   }
 
   async updateExample(request: Request<WithId, unknown, UpdateExampleDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const updatedExample = await this.exampleService.updateExample(Number(id), body);
-    if (updatedExample) {
-      this.ok(response, updatedExample);
+    const data = await this.exampleService.updateExample(Number(id), body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
-    next(new HTTPError(404, 'Не удалось изменить - пользователь не найден', this.context));
+    this.ok(response, data);
   }
 }
 

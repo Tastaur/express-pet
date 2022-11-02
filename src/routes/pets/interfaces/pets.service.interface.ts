@@ -1,12 +1,12 @@
 import { CreatePetDto, UpdatePetDto } from "../dto";
-import { NullablePromise } from "../../../globalTypes";
+import { MaybeErrorPromise } from "../../../globalTypes";
 import { PetModel } from "@prisma/client";
 
 
 export interface IPetsService {
   getPets: (hasTail?: string) => Promise<PetModel[]>;
-  getPetById: (id: number) => NullablePromise<PetModel>;
-  createPet: (data: CreatePetDto) => NullablePromise<PetModel>;
-  updatePet: (id: number, data: UpdatePetDto) => NullablePromise<PetModel>;
-  deletePet: (id: number) => NullablePromise<PetModel>;
+  getPetById: (id: number) => MaybeErrorPromise<PetModel>;
+  createPet: (data: CreatePetDto) => MaybeErrorPromise<PetModel>;
+  updatePet: (id: number, data: UpdatePetDto) => MaybeErrorPromise<PetModel>;
+  deletePet: (id: number) => MaybeErrorPromise<PetModel>;
 }

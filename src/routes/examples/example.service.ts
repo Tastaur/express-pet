@@ -18,7 +18,7 @@ export class ExampleService implements IExampleService {
   }
 
   async getExampleById(id: number) {
-    return this.exampleRepository.getExampleById(id).then((data) => data).catch(() => null);
+    return this.exampleRepository.getExampleById(id);
   }
 
   async createExample(dto: CreateExampleDto) {
@@ -26,10 +26,10 @@ export class ExampleService implements IExampleService {
   }
 
   async deleteExample(id: number) {
-    return this.exampleRepository.deleteExample(id).then((data) => data).catch(() => null);
+    return this.exampleRepository.deleteExample(id);
   }
 
   async updateExample(id: number, dto: UpdateExampleDto) {
-    return this.exampleRepository.updateExample(id, dto).then((data) => data).catch(() => null);
+    return this.exampleRepository.updateExample(id, dto);
   }
 }

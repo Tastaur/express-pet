@@ -1,4 +1,5 @@
 import { ParamsDictionary } from "express-serve-static-core";
+import { HTTPError } from "./common/exceptionFIlter/http-error.class";
 
 
 export enum SERVICE_TYPES {
@@ -28,3 +29,5 @@ export interface WithId extends ParamsDictionary {
 
 export type Nullable<T> = T | null
 export type NullablePromise<T> = Promise<Nullable<T>>
+export type MaybeError<T> = T | HTTPError
+export type MaybeErrorPromise<T> = Promise<MaybeError<T>>

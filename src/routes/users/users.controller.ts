@@ -11,6 +11,7 @@ import { IUserController } from "./interfaces/user.controller.interface";
 import { IUserService } from "./interfaces/user.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
 import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
+import { getHTTPErrorWithContext } from "../../utils/getHTTPErrorWithContext";
 
 
 @injectable()
@@ -71,50 +72,50 @@ export class UsersController extends BaseController implements IUserController {
 
   async getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const user = await this.userService.getUserById(Number(id));
-    if (user) {
-      this.send(response, 200, user);
+    const data = await this.userService.getUserById(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
-    next(new HTTPError(404, 'Пользователь по данному id не найдено', this.context));
+    this.send(response, 200, data);
   }
 
   async createUser(request: Request<unknown, unknown, CreateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
-    const user = await this.userService.createUser(body);
-    if (user) {
-      this.created(response, user);
+    const data = await this.userService.createUser(body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data,this.context));
       return;
     }
-    next(new HTTPError(400, "Пользователь уже существует", this.context));
+    this.created(response, data);
   }
 
   async deleteUser(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const deletedUser = await this.userService.deleteUser(Number(id));
-    if (deletedUser) {
-      this.ok(response, { id: deletedUser.id });
+    const data = await this.userService.deleteUser(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data,this.context));
       return;
     }
-    next(new HTTPError(404, `Пользователь по id ${id} не найден`, this.context));
+    this.ok(response, { id: data.id });
   }
 
   async updateUser(request: Request<WithId, unknown, UpdateUserDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const updatedUser = await this.userService.updateUser(Number(id), body);
-    if (updatedUser) {
-      this.ok(response, updatedUser);
+    const data = await this.userService.updateUser(Number(id), body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data,this.context));
       return;
     }
-    next(new HTTPError(404, `Пользователь c id ${id} не найден`, this.context));
+    this.ok(response, data);
   }
 
   async login(request: Request<unknown, unknown, UserLoginDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const data = await this.userService.login(body);
     if (data instanceof HTTPError) {
-      next(new HTTPError(data.statusCode, data.message, this.context));
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
     const { password, ...userData } = data;

@@ -7,10 +7,9 @@ import { PrismaService } from "../../../database/prisma.service";
 import { ExampleModel } from "@prisma/client";
 
 
-const app = mainApp.app;
-const server = mainApp.server;
-
 describe('/example', () => {
+  const { app, server } = mainApp;
+
   let example: ExampleModel = {
     id: 1,
     name: 'Example',
@@ -22,6 +21,9 @@ describe('/example', () => {
       .create({ data: { ...example } }).then((data) => {
         example = { ...example, ...data };
       });
+  });
+  afterAll(async () => {
+    await server.close();
   });
   it('GET /example', async () => {
     await request(app)
@@ -72,7 +74,7 @@ describe('/example', () => {
   it('DELETE /example/1', async () => {
     await request(app).get(`/example/${example.id}`).expect(200, example);
     await request(app).delete(`/example/${example.id}`).expect(200);
-    await request(app).delete(`/example/${example.id}`).expect(400);
+    await request(app).delete(`/example/${example.id}`).expect(404);
   });
 
   it('POST /example', (done) => {

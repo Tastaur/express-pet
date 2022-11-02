@@ -17,7 +17,6 @@ export class UserService implements IUserService {
   ) {
   }
 
-  // add logic if equal instant exists
   async createUser(dto: CreateUserDto) {
     const user = new UserDto(dto);
     await user.updateUser(dto, this.configService.get(ENV_KEY.SALT));
@@ -25,13 +24,13 @@ export class UserService implements IUserService {
   }
 
   async updateUser(userId: number, dto: UpdateUserDto) {
-    const currentUser = await this.userRepository.getUser(userId);
-    if (currentUser) {
-      const user = new UserDto(currentUser);
-      await user.updateUser(dto, this.configService.get(ENV_KEY.SALT));
-      return this.userRepository.updateUser(user.plainObject);
+    const data = await this.userRepository.getUser(userId);
+    if (data instanceof HTTPError) {
+      return data;
     }
-    return null;
+    const user = new UserDto(data);
+    await user.updateUser(dto, this.configService.get(ENV_KEY.SALT));
+    return this.userRepository.updateUser(user.plainObject);
   }
 
   async getUserById(id: number) {
@@ -48,14 +47,14 @@ export class UserService implements IUserService {
 
   async login({ email, password }: UserLoginDto) {
     return this.userRepository.login(email).then(data => {
-      if (data) {
-        const user = new UserDto(data);
-        return user.validatePass(password)
-          .then(isEqual => {
-            return isEqual ? data : new HTTPError(400, 'Неверный пароль');
-          });
+      if (data instanceof HTTPError) {
+        return data;
       }
-      return new HTTPError(404, 'Пользователь не найден');
+      const user = new UserDto(data);
+      return user.validatePass(password)
+        .then(isEqual => {
+          return isEqual ? data : new HTTPError(400, 'Неверный пароль');
+        });
     });
   }
 }

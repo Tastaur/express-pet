@@ -7,17 +7,16 @@ import { SERVICE_TYPES } from "../../../globalTypes";
 import { PrismaService } from "../../../database/prisma.service";
 
 
-const app = mainApp.app;
-const server = mainApp.server;
-
-
 describe('/pets', () => {
+  const { app, server } = mainApp;
   let mockPet: PetModel = {
     id: 1,
     name: 'Bober',
     hasTail: false,
   };
   const pets = [mockPet];
+
+
   beforeAll(async () => {
     await server.close();
     await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.petModel.deleteMany({});
@@ -25,6 +24,10 @@ describe('/pets', () => {
       .then(data => {
         mockPet = { ...mockPet, ...data };
       });
+  });
+
+  afterAll(async ()=>{
+    await server.close();
   });
   it('GET /pets', async () => {
     await request(app)

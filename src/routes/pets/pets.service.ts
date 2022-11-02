@@ -25,7 +25,6 @@ export class PetsService implements IPetsService {
     return this.petsRepository.deletePet(id);
   }
 
-  // add logic if equal instant exists
   async createPet(dto: CreatePetDto) {
     return this.petsRepository.createPet(dto);
   }

@@ -7,11 +7,8 @@ import { SERVICE_TYPES } from "../../../globalTypes";
 import { PrismaService } from "../../../database/prisma.service";
 
 
-const app = mainApp.app;
-const server = mainApp.server;
-const container = appContainer;
-
 describe('/users', () => {
+  const { app, server } = mainApp;
   const mockObject = {
     id: 1,
     name: 'Name',
@@ -29,10 +26,14 @@ describe('/users', () => {
 
   beforeAll(async () => {
     await server.close();
-    await (container.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.deleteMany({});
-    await (container.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.create({
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.deleteMany({});
+    await (appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService).client.userModel.create({
       data: mockObject,
     });
+  });
+
+  afterAll(async ()=>{
+    await server.close();
   });
   it('GET /users', async () => {
     await request(app)

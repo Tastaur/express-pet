@@ -10,23 +10,8 @@ import { IPetsController } from "./interfaces/pets.controller.interface";
 import { CreatePetDto, UpdatePetDto } from "./dto";
 import { IPetsService } from "./interfaces/pets.service.interface";
 import { ValidateMiddleware } from "../../common/middelwares/validateMiddleware";
-import { IPetDtoPlainObject } from "./dto/pet.dto";
 import { CheckIdMiddleware } from "../../common/middelwares/checkIdMiddleware";
-
-
-export const petMockObjects: Record<string, IPetDtoPlainObject> = {
-  // todo mock
-  '1': {
-    id: 1,
-    name: 'Dog',
-    hasTail: true,
-  },
-  '2': {
-    id: 2,
-    name: 'Fish',
-    hasTail: false,
-  },
-};
+import { getHTTPErrorWithContext } from "../../utils/getHTTPErrorWithContext";
 
 
 @injectable()
@@ -85,43 +70,43 @@ export class PetsController extends BaseController implements IPetsController {
 
   async getPetById(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const pet = await this.petService.getPetById(Number(id));
-    if (pet) {
-      this.send(response, 200, pet);
-    } else {
-      next(new HTTPError(404, `Домашний питомец по id ${id} не найден`, this.context));
+    const data = await this.petService.getPetById(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
+      return;
     }
+    this.send(response, 200, data);
   }
 
   async createPet(request: Request<unknown, unknown, CreatePetDto>, response: Response, next: NextFunction) {
     const { body } = request;
-    const newPet = await this.petService.createPet(body);
-    if (newPet) {
-      this.created(response, newPet);
-    } else {
-      next(new HTTPError(422, 'Данный питомец уже существует', this.context));
+    const data = await this.petService.createPet(body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
+      return;
     }
+    this.created(response, data);
   }
 
   async deletePet(request: Request<WithId>, response: Response, next: NextFunction) {
     const { id } = request.params;
-    const deletedPet = await this.petService.deletePet(Number(id));
-    if (deletedPet) {
-      this.ok(response, { id: deletedPet.id });
-    } else {
-      next(new HTTPError(404, `Питомец по id ${id} не найден`, this.context));
+    const data = await this.petService.deletePet(Number(id));
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
+      return;
     }
+    this.ok(response, { id: data.id });
   }
 
   async updatePet(request: Request<WithId, UpdatePetDto, UpdatePetDto>, response: Response, next: NextFunction) {
     const { body } = request;
     const { id } = request.params;
-    const changedPet = await this.petService.updatePet(Number(id), body);
-    if (changedPet) {
-      this.ok(response, changedPet);
-    } else {
-      next(new HTTPError(404, 'Не удалось изменить - питомец не найден', this.context));
+    const data = await this.petService.updatePet(Number(id), body);
+    if (data instanceof HTTPError) {
+      next(getHTTPErrorWithContext(data, this.context));
+      return;
     }
+    this.ok(response, data);
   }
 }
 

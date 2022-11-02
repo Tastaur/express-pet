@@ -1,15 +1,14 @@
 import { CreateUserDto, UpdateUserDto } from "../dto";
-import { NullablePromise } from "../../../globalTypes";
+import { MaybeErrorPromise } from "../../../globalTypes";
 import { UserModel } from "@prisma/client";
 import { UserLoginDto } from "../dto/user.login.dto";
-import { HTTPError } from "../../../common/exceptionFIlter/http-error.class";
 
 
 export interface IUserService {
-  createUser: (dto: CreateUserDto) => NullablePromise<UserModel>;
-  updateUser: (userId: number, dto: UpdateUserDto) => NullablePromise<UserModel>;
+  createUser: (dto: CreateUserDto) => MaybeErrorPromise<UserModel>;
+  updateUser: (userId: number, dto: UpdateUserDto) => MaybeErrorPromise<UserModel>;
   getUsers: () => Promise<UserModel[]>;
-  getUserById: (userId: number) => NullablePromise<UserModel>;
-  deleteUser: (userId: number) => NullablePromise<UserModel>;
-  login: (dto: UserLoginDto) => Promise<UserModel | HTTPError>;
+  getUserById: (userId: number) => MaybeErrorPromise<UserModel>;
+  deleteUser: (userId: number) => MaybeErrorPromise<UserModel>;
+  login: (dto: UserLoginDto) => MaybeErrorPromise<UserModel>;
 }
