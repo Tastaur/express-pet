@@ -1,6 +1,7 @@
 import { IMiddleware } from "./interface/middleware.interface";
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
+import { hourInMillisecond } from "../../globalConstants";
 
 
 export class AuthMiddleware implements IMiddleware {
@@ -14,7 +15,6 @@ export class AuthMiddleware implements IMiddleware {
         if (error) {
           next();
         } else if (data && typeof data !== "string") {
-          const hourInMillisecond = 60 * 60 * 1000;
           if ('iat' in data && data.iat && Math.floor(Date.now() - data.iat) > hourInMillisecond) {
             next();
             return;

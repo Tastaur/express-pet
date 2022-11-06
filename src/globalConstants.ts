@@ -1,3 +1,5 @@
+export const hourInMillisecond = 60 * 60 * 1000;
+
 export enum ROUTE_NAME {
   EXAMPLE = 'example',
   USERS = 'users',
