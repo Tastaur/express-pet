@@ -15,5 +15,6 @@ export enum VALIDATION_TYPE_MESSAGE {
 export enum ENV_KEY {
   DATABASE_URL = 'DATABASE_URL',
   PORT = 'PORT',
-  SALT = 'SALT'
+  SALT = 'SALT',
+  SECRET = 'SECRET'
 }

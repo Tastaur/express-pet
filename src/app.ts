@@ -11,6 +11,7 @@ import { IExampleController } from "./routes/examples/interfaces/example.control
 import { IPetsController } from "./routes/pets/interfaces/pets.controller.interface";
 import { IConfigService } from "./common/configService/config.service.interface";
 import { PrismaService } from "./database/prisma.service";
+import { AuthMiddleware } from "./common/middelwares/authMiddleware";
 
 
 @injectable()
@@ -30,7 +31,6 @@ export class App {
   ) {
     this.app = express();
     this.port = this.config.get(ENV_KEY.PORT) || 3005;
-    this.app.use(express.json());
   }
 
   useRoutes() {
@@ -39,11 +39,18 @@ export class App {
     });
   }
 
+  useAuthMiddleware() {
+    const authMiddleware = new AuthMiddleware(this.config.get(ENV_KEY.SECRET));
+    this.app.use(authMiddleware.execute.bind(authMiddleware));
+    this.app.use(express.json());
+  }
+
   useExceptionFilter() {
     this.app.use(this.exceptionFilter.catch);
   }
 
   public init = async () => {
+    this.useAuthMiddleware();
     this.useRoutes();
     this.useExceptionFilter();
     this.server = this.app.listen(this.port);

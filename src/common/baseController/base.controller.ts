@@ -23,7 +23,7 @@ export class BaseController implements IBaseController {
 
   public send<T>(res: Response, code: number, message: T) {
     return res
-      .type('application/json')
+      .contentType('application/json')
       .status(code)
       .json(message);
   }

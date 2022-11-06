@@ -52,9 +52,7 @@ export class UserService implements IUserService {
       }
       const user = new UserDto(data);
       return user.validatePass(password)
-        .then(isEqual => {
-          return isEqual ? data : new HTTPError(400, 'Неверный пароль');
-        });
+        .then(isEqual => isEqual ? data : new HTTPError(400, 'Неверный пароль'));
     });
   }
 }
