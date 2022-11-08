@@ -38,7 +38,7 @@ export class BaseController implements IBaseController {
 
   protected bindRouter(routes: BaseRouterInterface[], context: ROUTE_NAME) {
     for (const { func, method, path, middlewares } of routes) {
-      this.logger.log(`Подкюлчен: [${context}] ${method.toLocaleUpperCase()} ${path}`);
+      this.logger.log(`Launch: [${context}] ${method.toLocaleUpperCase()} ${path}`);
       const boundMiddlewares = middlewares?.map(m => m.execute.bind(m));
       const boundFunction = func.bind(this);
       this.router[method](path, boundMiddlewares ? [...boundMiddlewares, boundFunction] : boundFunction);

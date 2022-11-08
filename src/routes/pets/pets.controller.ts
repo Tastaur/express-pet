@@ -62,13 +62,13 @@ export class PetsController extends BaseController implements IPetsController {
     ], this.context);
   }
 
-  async getPets(request: Request<unknown, unknown, unknown, { hasTail?: string }>, response: Response) {
+  getPets = async (request: Request<unknown, unknown, unknown, { hasTail?: string }>, response: Response) => {
     const { hasTail } = request.query;
     const pets = await this.petService.getPets(hasTail);
     this.send(response, 200, pets);
-  }
+  };
 
-  async getPetById(request: Request<WithId>, response: Response, next: NextFunction) {
+  getPetById = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.petService.getPetById(Number(id));
     if (data instanceof HTTPError) {
@@ -76,9 +76,9 @@ export class PetsController extends BaseController implements IPetsController {
       return;
     }
     this.send(response, 200, data);
-  }
+  };
 
-  async createPet(request: Request<unknown, unknown, CreatePetDto>, response: Response, next: NextFunction) {
+  createPet = async (request: Request<unknown, unknown, CreatePetDto>, response: Response, next: NextFunction) => {
     const { body } = request;
     const data = await this.petService.createPet(body);
     if (data instanceof HTTPError) {
@@ -86,9 +86,9 @@ export class PetsController extends BaseController implements IPetsController {
       return;
     }
     this.created(response, data);
-  }
+  };
 
-  async deletePet(request: Request<WithId>, response: Response, next: NextFunction) {
+  deletePet = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.petService.deletePet(Number(id));
     if (data instanceof HTTPError) {
@@ -96,9 +96,10 @@ export class PetsController extends BaseController implements IPetsController {
       return;
     }
     this.ok(response, { id: data.id });
-  }
+  };
 
-  async updatePet(request: Request<WithId, UpdatePetDto, UpdatePetDto>, response: Response, next: NextFunction) {
+  updatePet = async (request: Request<WithId, UpdatePetDto, UpdatePetDto>,
+    response: Response, next: NextFunction) => {
     const { body } = request;
     const { id } = request.params;
     const data = await this.petService.updatePet(Number(id), body);
@@ -107,7 +108,7 @@ export class PetsController extends BaseController implements IPetsController {
       return;
     }
     this.ok(response, data);
-  }
+  };
 }
 
 

@@ -46,13 +46,12 @@ export class UserService implements IUserService {
   }
 
   async login({ email, password }: UserLoginDto) {
-    return this.userRepository.login(email).then(data => {
-      if (data instanceof HTTPError) {
-        return data;
-      }
-      const user = new UserDto(data);
-      return user.validatePass(password)
-        .then(isEqual => isEqual ? data : new HTTPError(400, 'Неверный пароль'));
-    });
+    const data = await this.userRepository.login(email);
+    if (data instanceof HTTPError) {
+      return data;
+    }
+    const user = new UserDto(data);
+    const isEqual = await user.validatePass(password);
+    return isEqual ? data : new HTTPError(401, 'Incorrect password');
   }
 }

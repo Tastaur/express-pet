@@ -16,9 +16,9 @@ export class ConfigService implements IConfigService {
   ) {
     const result: DotenvConfigOutput = config();
     if (result.error) {
-      this.logger.error("Не удалось прочитать .env или он отсутствует");
+      this.logger.error("Cannot read .env or .env does not exist");
     } else {
-      this.logger.log(`[ConfigService]: файл .env загружен`);
+      this.logger.log(`[ConfigService]: file .env was read`);
       this.config = 'test' !== process.env.NODE_ENV ? result.parsed as DotenvParseOutput : Object.values(ENV_KEY).reduce((acc, item) => {
         return { ...acc, [item]: process.env[item] } as DotenvParseOutput;
       }, {} as DotenvParseOutput);

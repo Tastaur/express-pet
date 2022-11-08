@@ -6,6 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import { CreateExampleDto, UpdateExampleDto } from "./dto";
 import "reflect-metadata";
 import { HTTPError } from "../../common/exceptionFIlter/http-error.class";
+import { getNotFoundInstanceMessage } from "../../utils/getNotFoundInstanceMessage";
 
 
 @injectable()
@@ -24,13 +25,13 @@ export class ExampleRepository implements IExampleRepository {
 
   async getExampleById(id: number) {
     return this.client.exampleModel.findUnique({ where: { id } })
-      .then(data => data || new HTTPError(404, `Пример по id ${id} не найден`));
+      .then(data => data || new HTTPError(404, getNotFoundInstanceMessage('Example', id)));
   }
 
   async deleteExample(id: number) {
     return this.client.exampleModel.delete({ where: { id } })
       .then(data => data)
-      .catch(() => new HTTPError(404, `Пример по id ${id} не найден`));
+      .catch(() => new HTTPError(404, getNotFoundInstanceMessage('Example', id)));
   }
 
   async createExample(dto: CreateExampleDto) {
@@ -40,6 +41,6 @@ export class ExampleRepository implements IExampleRepository {
   async updateExample(id: number, dto: UpdateExampleDto) {
     return this.client.exampleModel.update({ where: { id }, data: { ...dto } })
       .then(data => data)
-      .catch(() => new HTTPError(404, `Пользователь с id ${id} не найден`));
+      .catch(() => new HTTPError(404, getNotFoundInstanceMessage('Example', id)));
   }
 }

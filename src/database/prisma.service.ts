@@ -18,10 +18,10 @@ export class PrismaService {
   async connection() {
     await this.client.$connect()
       .then(() => {
-        this.logger.log('[Prisma]: база данных подключена');
+        this.logger.log('[Prisma]: db connected');
       }).catch(error => {
         if (error instanceof Error) {
-          this.logger.error(`[Prisma]: ошибка подключения к базе данных ${error.message}`);
+          this.logger.error(`[Prisma]: error in connection: ${error.message}`);
         }
       });
   }

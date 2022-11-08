@@ -71,12 +71,12 @@ export class UsersController extends BaseController implements IUserController {
     ], this.context);
   }
 
-  async getUsers(request: Request, response: Response) {
+  getUsers = async (request: Request, response: Response) => {
     const users = await this.userService.getUsers();
     this.ok(response, users);
-  }
+  };
 
-  async getUserById(request: Request<WithId>, response: Response, next: NextFunction) {
+  getUserById = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.userService.getUserById(Number(id));
     if (data instanceof HTTPError) {
@@ -84,40 +84,40 @@ export class UsersController extends BaseController implements IUserController {
       return;
     }
     this.send(response, 200, data);
-  }
+  };
 
-  async createUser(request: Request<unknown, unknown, CreateUserDto>, response: Response, next: NextFunction) {
+  createUser = async (request: Request<unknown, unknown, CreateUserDto>, response: Response, next: NextFunction) => {
     const { body } = request;
     const data = await this.userService.createUser(body);
     if (data instanceof HTTPError) {
-      next(getHTTPErrorWithContext(data,this.context));
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
     this.created(response, data);
-  }
+  };
 
-  async deleteUser(request: Request<WithId>, response: Response, next: NextFunction) {
+  deleteUser = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.userService.deleteUser(Number(id));
     if (data instanceof HTTPError) {
-      next(getHTTPErrorWithContext(data,this.context));
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
     this.ok(response, { id: data.id });
-  }
+  };
 
-  async updateUser(request: Request<WithId, unknown, UpdateUserDto>, response: Response, next: NextFunction) {
+  updateUser = async (request: Request<WithId, unknown, UpdateUserDto>, response: Response, next: NextFunction) => {
     const { body } = request;
     const { id } = request.params;
     const data = await this.userService.updateUser(Number(id), body);
     if (data instanceof HTTPError) {
-      next(getHTTPErrorWithContext(data,this.context));
+      next(getHTTPErrorWithContext(data, this.context));
       return;
     }
     this.ok(response, data);
-  }
+  };
 
-  async login(request: Request<unknown, unknown, UserLoginDto>, response: Response, next: NextFunction) {
+  login = async (request: Request<unknown, unknown, UserLoginDto>, response: Response, next: NextFunction) => {
     const { body } = request;
     const data = await this.userService.login(body);
     if (data instanceof HTTPError) {
@@ -127,7 +127,7 @@ export class UsersController extends BaseController implements IUserController {
     const { password, ...userData } = data;
     const token = await this.signJWT(body.email);
     this.ok(response, { ...userData, token });
-  }
+  };
 
   private async signJWT(email: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {

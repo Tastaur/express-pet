@@ -8,16 +8,16 @@ export class CheckIdMiddleware implements IMiddleware {
   constructor(private context: string) {
   }
 
-  execute(request: Request, res: Response, next: NextFunction) {
+  execute = (request: Request, res: Response, next: NextFunction) => {
     if (request.params.id) {
       const parsedId = checkIdIsNumber(request.params.id);
       if (parsedId) {
         next();
         return;
       }
-      next(new HTTPError(404, `Введён некорректный id`, this.context));
+      next(new HTTPError(404, `Incorrect id`, this.context));
       return;
     }
     next();
-  }
+  };
 }

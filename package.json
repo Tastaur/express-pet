@@ -17,7 +17,7 @@
     "test": "jest --forceExit",
     "lint": "eslint . --ext .ts --cache",
     "lint:fix": "eslint . --ext .ts --cache --fix",
-    "start": "nodemon src/index.ts",
+    "start": "NODE_ENV=development nodemon src/index.ts",
     "debug": "nodemon --exec 'node --inspect=0.0.0.0:9229 --require ts-node/register src/index.ts'",
     "prisma:migrate:dev": "npx prisma migrate dev",
     "prisma:generate": "npx prisma generate"

@@ -41,7 +41,7 @@ export class App {
 
   useAuthMiddleware() {
     const authMiddleware = new AuthMiddleware(this.config.get(ENV_KEY.SECRET));
-    this.app.use(authMiddleware.execute.bind(authMiddleware));
+    this.app.use(authMiddleware.execute);
     this.app.use(express.json());
   }
 
@@ -54,7 +54,7 @@ export class App {
     this.useRoutes();
     this.useExceptionFilter();
     this.server = this.app.listen(this.port);
-    this.logger.log(`Запущено: ${this.port}`);
+    this.logger.log(`Port: ${this.port}`);
     await this.prismaService.connection();
   };
 }

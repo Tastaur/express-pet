@@ -59,12 +59,12 @@ export class ExampleController extends BaseController implements IExampleControl
     ], this.context);
   }
 
-  async getAllExamples(request: Request, response: Response) {
+  getAllExamples = async (request: Request, response: Response) => {
     const examples = await this.exampleService.getExamples();
     this.send(response, 200, examples);
-  }
+  };
 
-  async getExampleById(request: Request<WithId>, response: Response, next: NextFunction) {
+  getExampleById = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.exampleService.getExampleById(Number(id));
     if (data instanceof HTTPError) {
@@ -72,9 +72,10 @@ export class ExampleController extends BaseController implements IExampleControl
       return;
     }
     this.send(response, 200, data);
-  }
+  };
 
-  async createExample(request: Request<unknown, unknown, CreateExampleDto>, response: Response, next: NextFunction) {
+  createExample = async (request: Request<unknown, unknown, CreateExampleDto>,
+    response: Response, next: NextFunction) => {
     const { body } = request;
     const data = await this.exampleService.createExample(body);
     if (data instanceof HTTPError) {
@@ -82,9 +83,9 @@ export class ExampleController extends BaseController implements IExampleControl
       return;
     }
     this.created(response, data);
-  }
+  };
 
-  async deleteExample(request: Request<WithId>, response: Response, next: NextFunction) {
+  deleteExample = async (request: Request<WithId>, response: Response, next: NextFunction) => {
     const { id } = request.params;
     const data = await this.exampleService.deleteExample(Number(id));
     if (data instanceof HTTPError) {
@@ -92,9 +93,10 @@ export class ExampleController extends BaseController implements IExampleControl
       return;
     }
     this.ok(response, { id: data.id });
-  }
+  };
 
-  async updateExample(request: Request<WithId, unknown, UpdateExampleDto>, response: Response, next: NextFunction) {
+  updateExample = async (request: Request<WithId, unknown, UpdateExampleDto>,
+    response: Response, next: NextFunction) => {
     const { body } = request;
     const { id } = request.params;
     const data = await this.exampleService.updateExample(Number(id), body);
@@ -103,7 +105,7 @@ export class ExampleController extends BaseController implements IExampleControl
       return;
     }
     this.ok(response, data);
-  }
+  };
 }
 
 

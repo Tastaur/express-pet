@@ -7,11 +7,11 @@ export class AuthGuardMiddleware implements IMiddleware {
   constructor(private context: string) {
   }
 
-  execute(req: Request, res: Response, next: NextFunction) {
+  execute = (req: Request, res: Response, next: NextFunction) => {
     if (req.user) {
       next();
     } else {
-      next(new HTTPError(401, 'Вы не авторизованы', this.context));
+      next(new HTTPError(401, 'You are not authorized', this.context));
     }
-  }
+  };
 }

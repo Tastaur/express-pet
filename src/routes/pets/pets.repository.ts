@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { CreatePetDto, UpdatePetDto } from "./dto";
 import { checkStringIsBoolean } from "../../utils/checkStringIsBoolean";
 import { HTTPError } from "../../common/exceptionFIlter/http-error.class";
+import { getNotFoundInstanceMessage } from "../../utils/getNotFoundInstanceMessage";
 
 
 @injectable()
@@ -27,19 +28,19 @@ export class PetsRepository implements IPetsRepository {
 
   async getPetById(id: number) {
     return this.client.petModel.findUnique({ where: { id } })
-      .then(data => data || new HTTPError(404, `Питомец с id ${id} не найден`));
+      .then(data => data || new HTTPError(404, getNotFoundInstanceMessage('Pet', id)));
   }
 
   async deletePet(id: number) {
     return this.client.petModel.delete({ where: { id } })
       .then(data => data)
-      .catch(() => new HTTPError(404, `Питомец с id ${id} не найден`));
+      .catch(() => new HTTPError(404, getNotFoundInstanceMessage('Pet', id)));
   }
 
   async updatePet(id: number, dto: UpdatePetDto) {
     return this.client.petModel.update({ where: { id }, data: { ...dto } })
       .then(data => data)
-      .catch(() => new HTTPError(404, `Питомец с id ${id} не найден`));
+      .catch(() => new HTTPError(404, getNotFoundInstanceMessage('Pet', id)));
   }
 
 

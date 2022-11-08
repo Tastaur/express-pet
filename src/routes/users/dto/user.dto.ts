@@ -51,7 +51,9 @@ export class UserDto {
   }
 
   public async validatePass(pass: string) {
-    return compare(pass, this._password);
+    return compare(pass, this._password)
+      .then((equal) => equal)
+      .catch(() => false);
   }
 
   setName(name: string) {

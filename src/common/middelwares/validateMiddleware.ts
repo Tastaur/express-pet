@@ -20,10 +20,10 @@ export class ValidateMiddleware implements IMiddleware {
     this.forbiddenEmpty = forbiddenEmpty;
   }
 
-  execute({ body }: Request, res: Response, next: NextFunction) {
+  execute = ({ body }: Request, res: Response, next: NextFunction) => {
     const instance = plainToInstance(this.classToValidate, body);
     if (0 === Object.keys(body).length && this.forbiddenEmpty) {
-      res.status(404).send({ message: 'Должно быть заполнено хотя бы одно поле' });
+      res.status(404).send({ message: 'One of fields have to be fulled' });
       return;
     }
     validate(instance).then(errors => {
@@ -33,5 +33,5 @@ export class ValidateMiddleware implements IMiddleware {
         next();
       }
     });
-  }
+  };
 }

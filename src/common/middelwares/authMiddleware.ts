@@ -8,7 +8,7 @@ export class AuthMiddleware implements IMiddleware {
   constructor(private secret: string) {
   }
 
-  execute(req: Request, res: Response, next: NextFunction) {
+  execute = (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization;
     if (auth) {
       verify(auth.split(' ')[1] || '', this.secret, (error, data) => {
@@ -26,5 +26,5 @@ export class AuthMiddleware implements IMiddleware {
     } else {
       next();
     }
-  }
+  };
 }
