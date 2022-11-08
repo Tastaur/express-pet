@@ -30,11 +30,6 @@ const createUserMock: CreateUserDto = {
   name: 'name',
   email: 'email@email.com',
 };
-jest.mock('bcryptjs');
-
-const bcrpytJsMocked = bcryptjs as jest.Mocked<typeof bcryptjs>;
-
-const errorMock = new HTTPError(404, 'errorMock');
 
 const container = new Container();
 let configService: IConfigService;
@@ -50,6 +45,12 @@ beforeAll(async () => {
   userRepository = container.get(SERVICE_TYPES.UserRepository);
   userService = container.get(SERVICE_TYPES.UsersService);
 });
+
+jest.mock('bcryptjs');
+
+const bcrpytJsMocked = bcryptjs as jest.Mocked<typeof bcryptjs>;
+
+const errorMock = new HTTPError(404, 'errorMock');
 
 describe('user service test', () => {
   describe('CREATE USER TEST', () => {
