@@ -14,7 +14,7 @@
     "directory": "tastaur-express"
   },
   "scripts": {
-    "test": "jest --forceExit",
+    "test": "jest",
     "lint": "eslint . --ext .ts --cache",
     "lint:fix": "eslint . --ext .ts --cache --fix",
     "start": "NODE_ENV=development nodemon src/index.ts",

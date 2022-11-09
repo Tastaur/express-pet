@@ -1,6 +1,6 @@
 import request from "supertest";
 import { CreateUserDto, UpdateUserDto } from "../routes/users/dto";
-import { appContainer, app as mainApp } from "../index";
+import { boot } from "../index";
 import { ExampleModel, PetModel, UserModel } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { SERVICE_TYPES } from "../globalTypes";
@@ -8,16 +8,24 @@ import { PrismaService } from "../database/prisma.service";
 import 'reflect-metadata';
 import { CreatePetDto, UpdatePetDto } from "../routes/pets/dto";
 import { CreateExampleDto } from "../routes/examples/dto";
+import { Express } from "express";
+import { App } from "../app";
 
 
-const { app, server } = mainApp;
+let mainApp: App;
+let application: Express;
+let prisma: PrismaService;
+
+beforeAll(async () => {
+  const { app, appContainer } = await boot;
+  mainApp = app;
+  application = app.app;
+  prisma = appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService;
+});
 
 
-const prisma = appContainer.get(SERVICE_TYPES.PrismaService) as PrismaService;
-
-
-afterAll(async () => {
-  await server.close();
+afterAll(() => {
+  mainApp.server.close();
 });
 
 describe('End to end test', () => {
@@ -47,7 +55,7 @@ describe('End to end test', () => {
 
     describe('LOGIN USER', () => {
       it('POST /users/login correct', (done) => {
-        request(app).post('/users/login')
+        request(application).post('/users/login')
           .send({ password: newCreatedUserInitialPassword, email: mockObject.email })
           .end((_, res) => {
             token = res.body?.token;
@@ -55,14 +63,14 @@ describe('End to end test', () => {
           });
       });
       it('POST /users/login user does not exist', (done) => {
-        request(app)
+        request(application)
           .post('/users/login')
           .send({ password: 'randomPass', email: 'random@email.com' })
           .expect(404, done);
       });
 
       it('POST /users/login invalid pass', (done) => {
-        request(app).post('/users/login')
+        request(application).post('/users/login')
           .send({ password: 'randomPass', email: mockObject.email })
           .expect(401, done);
       });
@@ -70,13 +78,13 @@ describe('End to end test', () => {
 
     describe('GET ALL USERS', () => {
       it('GET /users correct', async () => {
-        await request(app)
+        await request(application)
           .get('/users')
           .set('Authorization', `Beraer ${token}`)
           .expect(200, [mockObject]);
       });
       it('GET /users unauthorized', async () => {
-        await request(app)
+        await request(application)
           .get('/users')
           .expect(401);
       });
@@ -84,21 +92,21 @@ describe('End to end test', () => {
 
     describe('GET USER BY ID', () => {
       it('GET /users/1 correct', async () => {
-        await request(app)
+        await request(application)
           .get(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, mockObject);
       });
 
       it('GET /users/1 unauthorized', async () => {
-        await request(app)
+        await request(application)
           .get(`/users/${mockObject.id}`)
           .expect(401);
       });
 
       it('GET /users/321 incorrect', async () => {
         const findItemId = -1;
-        await request(app)
+        await request(application)
           .get(`/users/${findItemId}`).expect(404)
           .set('Authorization', `Beraer ${token}`);
       });
@@ -110,18 +118,18 @@ describe('End to end test', () => {
           name: 'changes',
           age: 44,
         };
-        request(app)
+        request(application)
           .get(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, mockObject);
 
-        request(app)
+        request(application)
           .put(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .send(changes)
           .expect(200, done);
 
-        request(app)
+        request(application)
           .get(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, changes);
@@ -132,12 +140,12 @@ describe('End to end test', () => {
           name: 'changes',
           age: 44,
         };
-        request(app)
+        request(application)
           .get(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, mockObject);
 
-        request(app)
+        request(application)
           .put(`/users/${mockObject.id}`)
           .send(changes)
           .expect(401, done);
@@ -150,13 +158,13 @@ describe('End to end test', () => {
           id: 1,
           ne: 'changes',
         };
-        request(app)
+        request(application)
           .put(`/users/${userId}`)
           .send(changes)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, done);
 
-        request(app)
+        request(application)
           .get(`/users/${userId}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200, currentUser);
@@ -169,13 +177,13 @@ describe('End to end test', () => {
           id: 14,
           name: 'Example',
         };
-        request(app)
+        request(application)
           .post('/users')
           .send(item)
           .set('Authorization', `Beraer ${token}`)
           .expect(422, done);
 
-        request(app)
+        request(application)
           .get(`/users/${item.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(400);
@@ -188,7 +196,7 @@ describe('End to end test', () => {
           name: 'name',
           password: 'pass',
         };
-        request(app)
+        request(application)
           .post('/users')
           .set('Authorization', `Beraer ${token}`)
           .send(data)
@@ -202,7 +210,7 @@ describe('End to end test', () => {
           name: 'name',
           password: 'pass',
         };
-        request(app)
+        request(application)
           .post('/users')
           .send(data)
           .expect(401, done);
@@ -212,22 +220,22 @@ describe('End to end test', () => {
     describe('DELETE USER', () => {
       it('DELETE /users/1', async () => {
         const findItemId = mockObject.id;
-        await request(app).get(`/users/${findItemId}`)
+        await request(application).get(`/users/${findItemId}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200);
-        await request(app).delete(`/users/${findItemId}`)
+        await request(application).delete(`/users/${findItemId}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(200);
 
       });
       it('DELETE /user/123 invalid user', async () => {
-        await request(app)
+        await request(application)
           .delete(`/users/${mockObject.id}`)
           .set('Authorization', `Beraer ${token}`)
           .expect(404);
       });
       it('DELETE /user/1 unauthorized', async () => {
-        await request(app)
+        await request(application)
           .delete(`/users/${mockObject.id}`)
           .expect(401);
       });
@@ -251,7 +259,7 @@ describe('End to end test', () => {
     });
 
     it('GET /pets', async () => {
-      await request(app)
+      await request(application)
         .get('/pets')
         .expect(200, pets);
     });
@@ -261,26 +269,26 @@ describe('End to end test', () => {
         return pets
           .filter(item => withTails ? item.hasTail : !item.hasTail);
       };
-      await request(app)
+      await request(application)
         .get('/pets?hasTail=true')
         .expect(200, getExpectedValue(true));
-      await request(app)
+      await request(application)
         .get('/pets?hasTail=false')
         .expect(200, getExpectedValue(false));
-      await request(app)
+      await request(application)
         .get('/pets?hasTail=random')
         .expect(200, pets);
     });
 
     it('GET /pets/1', async () => {
-      await request(app)
+      await request(application)
         .get(`/pets/${mockPet.id}`)
         .expect(200, mockPet);
     });
 
     it('GET /pets/321', async () => {
       const findItemId = 321;
-      await request(app).get(`/pets/${findItemId}`).expect(404);
+      await request(application).get(`/pets/${findItemId}`).expect(404);
     });
 
     it('PUT /pets', (done) => {
@@ -290,16 +298,16 @@ describe('End to end test', () => {
         hasTail: false,
       };
       mockPet = { ...mockPet, ...changes };
-      request(app)
+      request(application)
         .get(`/pets/${id}`)
         .expect(200, mockPet);
 
-      request(app)
+      request(application)
         .put(`/pets/${id}`)
         .send(changes)
         .expect(200, done);
 
-      request(app)
+      request(application)
         .get(`/pets/${id}`)
         .expect(200, mockPet);
     });
@@ -309,12 +317,12 @@ describe('End to end test', () => {
       const changes = {
         ne: 'changes',
       };
-      request(app)
+      request(application)
         .put(`/pets/${mockPet.id}`)
         .send(changes)
         .expect(404, done);
 
-      request(app)
+      request(application)
         .get(`/pets/${mockPet.id}`)
         .expect(200, currentPet);
 
@@ -322,9 +330,9 @@ describe('End to end test', () => {
 
     it('DELETE /pets/1', async () => {
       const findItemId = 1;
-      await request(app).get(`/pets/${findItemId}`).expect(200, mockPet);
-      await request(app).delete(`/pets/${findItemId}`).expect(200);
-      await request(app).delete(`/pets/${findItemId}`).expect(404);
+      await request(application).get(`/pets/${findItemId}`).expect(200, mockPet);
+      await request(application).delete(`/pets/${findItemId}`).expect(200);
+      await request(application).delete(`/pets/${findItemId}`).expect(404);
     });
 
     it('POST /pets', (done) => {
@@ -332,7 +340,7 @@ describe('End to end test', () => {
         name: 'Cat',
         hasTail: true,
       };
-      request(app)
+      request(application)
         .post('/pets')
         .send(item)
         .expect(201, done);
@@ -343,12 +351,12 @@ describe('End to end test', () => {
         id: 14,
         name: 'Example',
       };
-      request(app)
+      request(application)
         .post('/pets')
         .send(item)
         .expect(422, done);
 
-      request(app)
+      request(application)
         .get(`/pets/${item.id}`)
         .expect(400);
     });
@@ -369,20 +377,20 @@ describe('End to end test', () => {
     });
 
     it('GET /example', async () => {
-      await request(app)
+      await request(application)
         .get('/example')
         .expect(200, [example]);
     });
 
     it('GET /example/1', async () => {
-      await request(app)
+      await request(application)
         .get(`/example/${example.id}`)
         .expect(200, example);
     });
 
     it('GET /example/321', async () => {
       const findItemId = 321;
-      await request(app).get(`/example/${findItemId}`).expect(404);
+      await request(application).get(`/example/${findItemId}`).expect(404);
     });
 
     it('PUT /example', (done) => {
@@ -390,16 +398,16 @@ describe('End to end test', () => {
         name: 'changes',
       };
       example = { ...example, ...changes };
-      request(app)
+      request(application)
         .get(`/example/${example.id}`)
         .expect(200, example);
 
-      request(app)
+      request(application)
         .put('/example/1')
         .send(changes)
         .expect(200, done);
 
-      request(app)
+      request(application)
         .get('/example/1')
         .expect(200, example);
     });
@@ -408,23 +416,23 @@ describe('End to end test', () => {
       const changes = {
         ne: 'changes',
       };
-      request(app)
+      request(application)
         .put('/example/1')
         .send(changes)
         .expect(422, done);
     });
 
     it('DELETE /example/1', async () => {
-      await request(app).get(`/example/${example.id}`).expect(200, example);
-      await request(app).delete(`/example/${example.id}`).expect(200);
-      await request(app).delete(`/example/${example.id}`).expect(404);
+      await request(application).get(`/example/${example.id}`).expect(200, example);
+      await request(application).delete(`/example/${example.id}`).expect(200);
+      await request(application).delete(`/example/${example.id}`).expect(404);
     });
 
     it('POST /example', (done) => {
       const item: CreateExampleDto = {
         name: 'Example',
       };
-      request(app)
+      request(application)
         .post('/example')
         .send(item)
         .expect(201, done);
@@ -434,7 +442,7 @@ describe('End to end test', () => {
       const item = {
         ame: 'Example',
       };
-      request(app)
+      request(application)
         .post('/example')
         .send(item)
         .expect(422, done);
